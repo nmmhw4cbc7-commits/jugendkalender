@@ -99,6 +99,8 @@ label{display:block;font-weight:600;font-size:.9rem;margin:12px 0 6px}
 /* Die Geburtstage kommen aus der Datei geburtstage.csv im selben Ordner.
    Spalten: Name;Geburtsdatum (TT.MM.JJJJ);Telegram (optional) */
 const DATA_FILE = "geburtstage.csv";
+/* Reihenfolge der Namen in der Datei: "nachname vorname" (z. B. Nezlaw Bettina) oder "vorname nachname" */
+const NAME_ORDER = "nachname vorname";
 
 const $=s=>document.querySelector(s);
 const ic=n=>`<svg class="i" aria-hidden="true"><use href="#i-${n}"/></svg>`;
@@ -138,7 +140,9 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-g]');if(b)
 $('#q').addEventListener('input',render);
 
 let cur=null;
-function msg(p){const a=next(p).age;return `Alles Gute zum ${a}. Geburtstag, ${p.n.split(' ')[0]}! Feier schön und lass dich ordentlich feiern!`}
+function names(p){const w=p.n.split(/\s+/);if(w.length<2)return{fn:p.n,ln:''};
+ return NAME_ORDER==='vorname nachname'?{fn:w[0],ln:w.slice(1).join(' ')}:{fn:w.slice(1).join(' '),ln:w[0]}}
+function msg(p){const a=next(p).age;return `Alles Gute zum ${a}. Geburtstag, ${names(p).fn}! Feier schön und lass dich ordentlich feiern!`}
 function openG(i){const p=data[i];if(!p)return;cur={p,age:next(p).age};
  $('#gTitle').textContent='Gratulieren: '+p.n;$('#gMsg').value=msg(p);
  $('#gHint').textContent=p.tg?'Telegram: '+p.tg:'Kein Telegram-Kontakt hinterlegt. Beim Senden wählst du den Chat selbst aus.';
@@ -164,19 +168,31 @@ function card(p,age){const c=document.createElement('canvas');c.width=c.height=1
  x.globalAlpha=1;x.fillStyle='#ffd23f';x.beginPath();x.arc(540,470,300,0,7);x.fill();
  x.textAlign='center';x.fillStyle='#1a1a3d';x.font='800 330px system-ui,sans-serif';x.fillText(age,540,585);
  x.fillStyle='#fff';x.font='800 84px system-ui,sans-serif';x.fillText('Alles Gute zum Geburtstag!',540,870);
- let fs=100;x.font=`800 ${fs}px system-ui,sans-serif`;while(x.measureText(p.n).width>940&&fs>40){fs-=6;x.font=`800 ${fs}px system-ui,sans-serif`}
- x.fillStyle='#ffd23f';x.fillText(p.n,540,980);return c}
+ const nn=names(p),full=(nn.fn+' '+nn.ln).trim();let fs=100;x.font=`800 ${fs}px system-ui,sans-serif`;while(x.measureText(full).width>940&&fs>40){fs-=6;x.font=`800 ${fs}px system-ui,sans-serif`}
+ x.fillStyle='#ffd23f';x.fillText(full,540,980);return c}
 
-function parse(t){t=t.replace(/^\uFEFF/,'');const L=t.split(/\r?\n/).filter(l=>l.trim());if(!L.length)return[];
- const dl=L[0].includes('\t')?'\t':L[0].includes(';')?';':',';
- const R=L.map(l=>l.split(dl).map(c=>c.trim().replace(/^"|"$/g,'')));
- let nf=r=>r[0],di=1,ti=2;
- if(!R[0].some(c=>pDate(c))){const h=R.shift().map(c=>c.toLowerCase());
-  const f=re=>h.findIndex(c=>re.test(c));
-  const vi=f(/^vorname/),li=f(/^(nach|familien)name/),ni=f(/^name$/)>=0?f(/^name$/):f(/name/);
-  if(vi>=0&&li>=0)nf=r=>((r[vi]||'')+' '+(r[li]||'')).trim();else if(ni>=0)nf=r=>r[ni];
-  if(f(/geb|datum|date/)>=0)di=f(/geb|datum|date/);ti=f(/tele|tg|handy/)}
- return R.map(r=>toP([nf(r),r[di],ti>=0?r[ti]:''])).filter(p=>p&&p.n)}
+function csv(t,dl){const out=[];let row=[],c='',q=false;
+ for(let i=0;i<t.length;i++){const ch=t[i];
+  if(q){if(ch=='"'){if(t[i+1]=='"'){c+='"';i++}else q=false}else c+=ch}
+  else if(ch=='"')q=true;
+  else if(ch==dl){row.push(c);c=''}
+  else if(ch=='\n'||ch=='\r'){if(ch=='\r'&&t[i+1]=='\n')i++;row.push(c);out.push(row);row=[];c=''}
+  else c+=ch}
+ row.push(c);out.push(row);return out}
+function fixEnc(t){if(!/Ã[\u0080-\u00BF]/.test(t))return t;
+ try{return new TextDecoder('utf-8',{fatal:true}).decode(Uint8Array.from(t,c=>{const k=c.charCodeAt(0);if(k>255)throw 0;return k}))}catch(e){return t}}
+/* Findet pro Zeile das erste Datum; der Name ist die Textzelle direkt davor. Alle anderen Spalten werden ignoriert. */
+function parse(t){t=fixEnc(t.replace(/^\uFEFF/,''));
+ const head=t.slice(0,3000),cnt=d=>head.split(d).length;
+ const dl=[',',';','\t'].sort((a,b)=>cnt(b)-cnt(a))[0],out=[];
+ for(const r of csv(t,dl)){const c=r.map(x=>x.trim());const di=c.findIndex(x=>pDate(x));if(di<0)continue;
+  const isT=x=>/[A-Za-zÀ-ÿ]/.test(x)&&!/^(@|\+)/.test(x);
+  let ni=-1;for(let i=di-1;i>=0&&ni<0;i--)if(isT(c[i]))ni=i;
+  for(let i=di+1;i<c.length&&ni<0;i++)if(isT(c[i]))ni=i;
+  if(ni<0)continue;
+  const tg=c.find(x=>/^(@\w{4,}|\+\d{6,})$/.test(x))||'';
+  const p=toP([c[ni],c[di],tg]);if(p)out.push(p)}
+ return out}
 function status(t){const e=$('#st');if(e)e.textContent=t}
 async function loadDB(quiet){
  try{const r=await fetch(DATA_FILE,{cache:'no-store'});
