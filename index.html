@@ -95,14 +95,9 @@ label{display:block;font-weight:600;font-size:.9rem;margin:12px 0 6px}
 <div class="toast" id="toast" role="status"></div>
 
 <script>
-/* ============================================================
-   HIER DEINE SUPABASE-DATEN EINTRAGEN
-   Supabase: Project Settings > API
-   - Project URL      -> SUPABASE_URL
-   - anon / publishable Key -> SUPABASE_KEY  (NICHT den service_role Key!)
-   ============================================================ */
-const SUPABASE_URL = "";
-const SUPABASE_KEY = "";
+/* Die Geburtstage kommen aus der Datei geburtstage.csv im selben Ordner.
+   Spalten: Name;Geburtsdatum (TT.MM.JJJJ);Telegram (optional) */
+const DATA_FILE = "geburtstage.csv";
 
 const $=s=>document.querySelector(s);
 const ic=n=>`<svg class="i" aria-hidden="true"><use href="#i-${n}"/></svg>`;
@@ -115,7 +110,7 @@ function pDate(s){s=(s||'').trim();let a;
  if(a=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))return{y:+a[1],m:+a[2],d:+a[3]};
  if(a=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/))return{m:+a[1],d:+a[2],y:+a[3]};return null}
 try{data=JSON.parse(LS('jk_data')||'null')}catch(e){}
-if(!data)data=SUPABASE_URL?[]:DEMO.map(toP);
+if(!data)data=DEMO.map(toP);
 function save(){LS('jk_data',JSON.stringify(data))}
 function leap(y){return y%4==0&&(y%100!=0||y%400==0)}
 function next(p){const t=new Date();t.setHours(0,0,0,0);let y=t.getFullYear();
@@ -179,16 +174,10 @@ function parse(t){const L=t.split(/\r?\n/).filter(l=>l.trim());if(!L.length)retu
   const f=re=>h.findIndex(c=>re.test(c));
   if(f(/name/)>=0)ni=f(/name/);if(f(/geb|datum|date/)>=0)di=f(/geb|datum|date/);ti=f(/tele|tg|handy/)}
  return R.map(r=>toP([r[ni],r[di],ti>=0?r[ti]:''])).filter(p=>p&&p.n)}
-const SB=SUPABASE_URL.replace(/\/$/,'');
 async function loadDB(quiet){
- if(!SUPABASE_URL){if(!quiet)toast('Supabase ist im Code noch nicht eingetragen');return}
- try{let all=[],off=0;
-  while(true){
-   const r=await fetch(`${SB}/rest/v1/birthdays?select=name,birthdate,telegram&order=name&limit=1000&offset=${off}`,{headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY}});
-   if(!r.ok)throw 0;
-   const part=await r.json();all=all.concat(part);if(part.length<1000)break;off+=1000}
-  data=all.map(x=>toP([x.name,x.birthdate,x.telegram])).filter(Boolean);save();render();
-  if(!quiet)toast(data.length+' Geburtstage aktualisiert')}
+ try{const r=await fetch(DATA_FILE,{cache:'no-store'});if(!r.ok)throw 0;
+  const rows=parse(await r.text());if(!rows.length)throw 0;
+  data=rows;save();render();if(!quiet)toast(rows.length+' Geburtstage aktualisiert')}
  catch(e){if(!quiet)toast('Aktualisieren nicht möglich, zuletzt geladener Stand wird gezeigt')}}
 $('#ref').onclick=()=>loadDB(false);
 
