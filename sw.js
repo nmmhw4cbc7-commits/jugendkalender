@@ -1,4 +1,4 @@
-const CACHE = 'jugendkalender-v2';
+const CACHE = 'jugendkalender-v4';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/maskable-512.png'];
 
 self.addEventListener('install', e => {
@@ -17,16 +17,8 @@ self.addEventListener('fetch', e => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
 
-  // Externe Anfragen (z. B. Google Sheet): erst Netz, bei Fehler letzter Stand aus dem Cache
-  if (url.origin !== location.origin) {
-    e.respondWith(
-      fetch(req).then(res => {
-        if (res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(req, copy)); }
-        return res;
-      }).catch(() => caches.match(req))
-    );
-    return;
-  }
+  // Externe Anfragen (Supabase) nicht abfangen, damit keine Daten im Cache landen
+  if (url.origin !== location.origin) return;
 
   // App-Dateien: erst Cache, im Hintergrund aktualisieren
   e.respondWith(
