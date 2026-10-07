@@ -55,7 +55,6 @@ h3{font-size:.8rem;margin:20px 6px 8px;color:var(--mut);font-weight:700;letter-s
 dialog{border:0;border-radius:28px;padding:18px;width:min(94vw,520px);max-height:94vh;background:var(--card);color:var(--ink)}
 dialog::backdrop{background:rgba(0,0,0,.7)}
 dialog h2{margin:0 0 10px;font-size:1.2rem}
-#cv{display:block;max-width:100%;max-height:46vh;width:auto;height:auto;margin:0 auto 12px;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.5)}
 textarea{width:100%;font:inherit;padding:12px;border-radius:16px;border:0;background:var(--soft);color:var(--ink);resize:vertical}
 dialog .ghost{background:var(--soft)}
 .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
@@ -87,12 +86,11 @@ dialog .ghost{background:var(--soft)}
 
 <dialog id="dGrat">
 <h2 id="gTitle">Gratulieren</h2>
-<canvas id="cv" aria-label="Vorschau der Glückwunschkarte"></canvas>
-<textarea id="gMsg" rows="5" aria-label="Nachricht für Telegram"></textarea>
+<textarea id="gMsg" rows="8" aria-label="Nachricht für Telegram"></textarea>
 <div class="acts">
-<button class="pri" id="gImg"><svg class="i"><use href="#i-image"/></svg>Karte teilen</button>
 <button class="pri" id="gTg"><svg class="i"><use href="#i-send"/></svg>Telegram</button>
-<button class="ghost" id="gNew"><svg class="i"><use href="#i-shuffle"/></svg>Neu mischen</button>
+<button class="pri" id="gImg"><svg class="i"><use href="#i-image"/></svg>Bild teilen</button>
+<button class="ghost" id="gNew"><svg class="i"><use href="#i-shuffle"/></svg>Neuer Vers</button>
 <button class="ghost" id="gCopy"><svg class="i"><use href="#i-copy"/></svg>Kopieren</button>
 <button class="ghost" id="gClose"><svg class="i"><use href="#i-x"/></svg>Schließen</button>
 </div>
@@ -143,40 +141,14 @@ function names(p){const w=p.n.split(/\s+/);if(w.length<2)return{fn:p.n,ln:''};
  return NAME_ORDER==='vorname nachname'?{fn:w[0],ln:w.slice(1).join(' ')}:{fn:w.slice(1).join(' '),ln:w[0]}}
 const gr=p=>p.g==='f'?'Liebe':p.g==='m'?'Lieber':'Liebe(r)';
 
-/* ---------- Landschaft (Karte und Kopfbereich) ---------- */
-const PAL=[
-{sky:['#7fa9cf','#f6d9b0','#f4a977'],sun:'#fff1c9',fog:'#ffe6c4',hills:['#a9b8b0','#7fa08f','#5b866f','#3d6a57','#264c3e']},
-{sky:['#5da2e0','#b9e0f5','#f6f1d6'],sun:'#fffbe0',fog:'#ffffff',hills:['#b4d6b0','#88bd86','#5fa068','#3f8050','#2b6040']},
-{sky:['#3b4b7c','#c56a7c','#f4aa5e'],sun:'#ffe2a8',fog:'#f7c8a0',hills:['#8a769b','#66618c','#4a5278','#323d62','#212b4a']},
-{sky:['#9cc2d6','#f2dfb9','#f0b46c'],sun:'#fff0c4',fog:'#f7dcae',hills:['#d2ac66','#bb8744','#946432','#6e4d2e','#443b2a']}];
-const rng=s=>()=>(s=(s*16807)%2147483647)/2147483647;
-function landscape(x,W,H,seed,pi){
- const R=rng(Math.abs(seed)*7+13),P=PAL[pi%PAL.length],k=W/1600;
- let g=x.createLinearGradient(0,0,0,H*.66);g.addColorStop(0,P.sky[0]);g.addColorStop(.6,P.sky[1]);g.addColorStop(1,P.sky[2]);
- x.fillStyle=g;x.fillRect(0,0,W,H);
- const sx=W*(.25+R()*.5),sy=H*(.3+R()*.1),sr=Math.min(W,H)*.05;
- g=x.createRadialGradient(sx,sy,0,sx,sy,sr*7);g.addColorStop(0,P.sun+'ff');g.addColorStop(.2,P.sun+'99');g.addColorStop(1,P.sun+'00');
- x.fillStyle=g;x.fillRect(0,0,W,H);
- x.fillStyle=P.sun;x.beginPath();x.arc(sx,sy,sr,0,7);x.fill();
- x.fillStyle='rgba(255,255,255,.2)';
- for(let i=0;i<6;i++){const cx=R()*W,cy=H*(.08+R()*.3),w=(120+R()*220)*k;for(let j=0;j<4;j++){x.beginPath();x.ellipse(cx+(j-1.5)*w*.3,cy+(j%2)*10*k,w*.4,w*.11,0,0,7);x.fill()}}
- for(let i=0;i<5;i++){const base=H*(.52+i*.085),amp=H*(.12-i*.014),ph=[R()*9,R()*9,R()*9],f=[1.2+R(),3+R()*2,7+R()*3];
-  const y=xx=>{const t=xx/W*6.283;return base-amp*(i<2?.6*(1-Math.abs(Math.sin(t*f[0]*.7+ph[0])))+.25*Math.sin(t*f[1]+ph[1])+.15*Math.sin(t*f[2]+ph[2]):.5*Math.sin(t*f[0]*.6+ph[0])+.3*Math.sin(t*f[1]*.7+ph[1])+.2*Math.sin(t*f[2]*.5+ph[2]))};
-  const path=()=>{x.beginPath();x.moveTo(0,H);for(let xx=0;xx<=W;xx+=6)x.lineTo(xx,y(xx));x.lineTo(W,H);x.closePath()};
-  path();x.fillStyle=P.hills[i];x.fill();
-  if(i<3){g=x.createLinearGradient(0,base-amp,0,base+amp);g.addColorStop(0,P.fog+'00');g.addColorStop(1,P.fog+'88');path();x.fillStyle=g;x.fill()}
-  if(i>=2){x.fillStyle=P.hills[i];for(let xx=0;xx<W;xx+=(26+R()*50)*k){const yy=y(xx),h=(40+R()*80)*k*(.6+i*.22);
-   for(let s=0;s<3;s++){const w=h*(.5-s*.1),top=yy-h+s*h*.28;x.beginPath();x.moveTo(xx,top);x.lineTo(xx-w/2,top+h*.42);x.lineTo(xx+w/2,top+h*.42);x.closePath();x.fill()}}}}
- x.strokeStyle='rgba(40,50,60,.5)';x.lineWidth=2.5*k;
- for(let i=0;i<5;i++){const bx=W*(.1+R()*.8),by=H*(.12+R()*.2),s=(10+R()*12)*k;x.beginPath();x.moveTo(bx-s,by);x.quadraticCurveTo(bx-s/2,by-s/2,bx,by);x.quadraticCurveTo(bx+s/2,by-s/2,bx+s,by);x.stroke()}}
-
-/* ---------- Karte (A4) ---------- */
+/* ---------- Karte (A4, schlicht) ---------- */
 let fontP;const fonts=()=>fontP||(fontP=Promise.all(['400 60px "Cormorant Garamond"','italic 400 60px "Cormorant Garamond"','600 60px "Cormorant Garamond"','400 60px "Great Vibes"'].map(f=>document.fonts.load(f,'Äöß„“')))).catch(()=>{});
-async function drawCard(cv,p,age,seed,vi){
+async function drawCard(p,age,vi){
  await fonts();
- const W=1654,H=2339,x=cv.getContext('2d'),v=VERSES[vi%VERSES.length];cv.width=W;cv.height=H;
- landscape(x,W,H,seed,seed%4);
- const PW=1320,mw=PW-230,INK='#1e2b27',GOLD='#a8832f',CG='"Cormorant Garamond",Georgia,serif',GV='"Great Vibes",Georgia,serif';
+ const W=1654,H=2339,cv=document.createElement('canvas'),x=cv.getContext('2d'),v=VERSES[vi%VERSES.length];cv.width=W;cv.height=H;
+ const mw=1120,INK='#1e2b27',GOLD='#a8832f',CG='"Cormorant Garamond",Georgia,serif',GV='"Great Vibes",Georgia,serif';
+ x.fillStyle='#fffaf0';x.fillRect(0,0,W,H);
+ x.strokeStyle=GOLD;x.lineWidth=8;x.strokeRect(70,70,W-140,H-140);x.lineWidth=3;x.strokeRect(100,100,W-200,H-200);
  const wrap=(t,f)=>{x.font=f;const o=[];let l='';t.split(' ').forEach(w=>{const n=l?l+' '+w:w;if(x.measureText(n).width>mw&&l){o.push(l);l=w}else l=n});o.push(l);return o};
  const items=[],add=(h,f)=>items.push({h,f});
  const txt=(t,font,col,lh,gap,ls)=>{const L=wrap(t,font);add(L.length*lh+gap,y=>{x.font=font;x.fillStyle=col;x.letterSpacing=ls||'0px';L.forEach((l,i)=>x.fillText(l,W/2,y+lh*i+lh*.72))})};
@@ -193,10 +165,7 @@ async function drawCard(cv,p,age,seed,vi){
  orn(30);
  txt('„'+v[0]+'“',`italic 400 54px ${CG}`,INK,74,26);
  txt('– '+v[1].toUpperCase()+' –',`600 38px ${CG}`,GOLD,52,0,'5px');
- const pad=90,tot=items.reduce((a,b)=>a+b.h,0),ph=tot+pad*2,py=(H-ph)/2,px=(W-PW)/2;
- x.save();x.shadowColor='rgba(0,0,0,.35)';x.shadowBlur=60;x.shadowOffsetY=16;x.fillStyle='rgba(255,250,240,.9)';x.beginPath();x.roundRect(px,py,PW,ph,36);x.fill();x.restore();
- x.strokeStyle=GOLD;x.lineWidth=3;x.beginPath();x.roundRect(px+24,py+24,PW-48,ph-48,24);x.stroke();
- let y=py+pad;items.forEach(i=>{i.f(y);y+=i.h});x.letterSpacing='0px'}
+ let y=(H-items.reduce((a,b)=>a+b.h,0))/2;items.forEach(i=>{i.f(y);y+=i.h});x.letterSpacing='0px';return cv}
 
 /* ---------- Liste ---------- */
 function render(){
@@ -222,9 +191,9 @@ let cur=null;
 const rnd=n=>Math.floor(Math.random()*n);
 function msg(){const p=cur.p,v=VERSES[cur.vi%VERSES.length];
  return `${gr(p)} ${names(p).fn}, ich wünsche dir alles Gute und Gottes reichen Segen zu deinem ${cur.age}. Geburtstag. Möge er dich führen und immer ein fester Anker in deinem Leben sein.\n\n„${v[0]}“\n– ${v[1]}`}
-async function shuffle(){cur.seed=1+rnd(99999);cur.vi=rnd(VERSES.length);$('#gMsg').value=msg();await drawCard($('#cv'),cur.p,cur.age,cur.seed,cur.vi)}
-async function openG(i){const p=data[i];if(!p)return;cur={p,age:next(p).age};
- $('#gTitle').textContent='Gratulieren: '+names(p).fn;$('#dGrat').showModal();await shuffle()}
+function shuffle(){cur.vi=rnd(VERSES.length);$('#gMsg').value=msg()}
+function openG(i){const p=data[i];if(!p)return;cur={p,age:next(p).age};
+ $('#gTitle').textContent='Gratulieren: '+names(p).fn;shuffle();$('#dGrat').showModal()}
 $('#gNew').onclick=shuffle;
 $('#gClose').onclick=()=>$('#dGrat').close();
 function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),2200)}
@@ -235,10 +204,10 @@ $('#gTg').onclick=async()=>{const t=$('#gMsg').value,tg=cur.p.tg.replace(/\s/g,'
  else if(/^\+?\d{6,}$/.test(tg)){await copy(t);toast('Text kopiert, im Chat einfügen');url=`https://t.me/${tg.startsWith('+')?tg:'+'+tg}`}
  else url=`https://t.me/share/url?url=%20&text=${encodeURIComponent(t)}`;
  window.open(url,'_blank','noopener')};
-$('#gImg').onclick=async()=>{const blob=await new Promise(r=>$('#cv').toBlob(r,'image/png'));
+$('#gImg').onclick=async()=>{const blob=await new Promise(async r=>(await drawCard(cur.p,cur.age,cur.vi)).toBlob(r,'image/png'));
  const file=new File([blob],'glueckwunsch-'+names(cur.p).fn.replace(/\W+/g,'')+'.png',{type:'image/png'});
  try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],text:$('#gMsg').value});return}}catch(e){if(e.name==='AbortError')return}
- const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=file.name;a.click();toast('Karte gespeichert')};
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=file.name;a.click();toast('Bild gespeichert')};
 
 /* ---------- Daten ---------- */
 function csv(t,dl){const out=[];let row=[],c='',q=false;
