@@ -309,7 +309,7 @@ async function stamp(r){let t=null,src='';
  LS('jk_upd',JSON.stringify({t,src}));showUpd()}
 function showUpd(){let o=null;try{o=JSON.parse(LS('jk_upd')||'null')}catch(e){}
  $('#valUpd').textContent=o?(o.src?'Liste abgerufen: ':'Liste aktualisiert: ')+new Date(o.t).toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'}):'Liste noch nicht geladen'}
-async function showVer(){try{const k=(await caches.keys()).filter(x=>/^jugendkalender-v\d+$/.test(x)).sort((a,b)=>a.slice(16)-b.slice(16)).pop();$('#valVer').textContent=k?'Version '+k.slice(16):''}catch(e){$('#valVer').textContent=''}}
+async function showVer(){try{const k=(await caches.keys()).filter(x=>/^jugendkalender-v\d+(\.\d+)*$/.test(x)).sort((a,b)=>a.localeCompare(b,undefined,{numeric:true})).pop();$('#valVer').textContent=k?'Version '+k.slice(16):''}catch(e){$('#valVer').textContent=''}}
 function status(t){const e=$('#st');e.dataset.m=1;e.textContent=t}
 async function loadDB(quiet){
  try{const r=await fetch(DATA_FILE,{cache:'no-store'});
@@ -323,7 +323,7 @@ $('#ref').onclick=()=>loadDB(false);
 const DOCS={
 p:{t:'Datenschutzerklärung',h:`<p class="stand">Stand: 7. Oktober 2026</p>
 <h2>1. Verantwortlicher</h2>
-<p>Philipp Dachtler<br>[Anschrift ergänzen]<br>E-Mail: <a href="mailto:philippdachtler01@gmail.com">philippdachtler01@gmail.com</a></p>
+<p>Philipp Dachtler<br>Klappengasse 54b<br>67105 Schifferstadt<br>Telefon: +4915752171727<br>E-Mail: <a href="mailto:philippdachtler01@gmail.com">philippdachtler01@gmail.com</a></p>
 <h2>2. Worum es geht</h2>
 <p>Der Jugendkalender zeigt die Geburtstage einer Jugendgruppe an, berechnet das Alter und hilft beim Gratulieren. Es gibt keine Registrierung, keine Werbung, kein Tracking und keine Analysedienste. Die App setzt selbst keine Cookies.</p>
 <h2>3. Welche Daten verarbeitet werden</h2>
