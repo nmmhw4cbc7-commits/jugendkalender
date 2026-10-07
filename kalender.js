@@ -190,3 +190,15 @@ TABS.forEach(k=>bt[k].onclick=()=>show(k));
 /* Neu zeichnen, wenn die Liste aktualisiert wird */
 const r0=window.render;window.render=function(){r0();if(!vc.hidden)renderCal(0)};
 })();
+
+/* WhatsApp-Button im Gratulieren-Fenster (neben Telegram), 3 rote oben, 3 graue unten */
+(()=>{if($('#gWa'))return;
+const css=document.createElement('style');
+css.textContent='#dGrat .acts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}#dGrat .acts button{flex-direction:column;gap:4px;padding:12px 4px;font-size:.8rem;border-radius:18px;white-space:nowrap}';
+document.head.appendChild(css);
+document.body.insertAdjacentHTML('beforeend','<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="i-wa" viewBox="0 0 24 24"><path d="M3 21l1.65-4.9A9 9 0 1 1 8 19.4z"/><path d="M9 10c0 3 2 5 5 5l1.2-1.4-1.9-1-.8.7c-.9-.4-1.6-1.1-2-2l.7-.8-1-1.9z"/></symbol></svg>');
+$('#gTg').insertAdjacentHTML('afterend','<button class="pri" id="gWa">'+ic('wa')+'WhatsApp</button>');
+/* Mit Telefonnummer im Telegram-Feld öffnet sich direkt der Chat, sonst die Kontaktauswahl von WhatsApp */
+$('#gWa').onclick=()=>{const t=$('#gMsg').value,tg=cur.p.tg.replace(/\s/g,''),n=/^\+?\d{6,}$/.test(tg)?tg.replace(/\D/g,''):'';
+ window.open('https://wa.me/'+n+'?text='+encodeURIComponent(t),'_blank','noopener')};
+})();
