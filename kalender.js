@@ -217,3 +217,11 @@ $('#gTg').insertAdjacentHTML('afterend','<button class="pri" id="gWa">'+ic('wa')
 $('#gWa').onclick=()=>{const t=$('#gMsg').value,tg=cur.p.tg.replace(/\s/g,''),n=/^\+?\d{6,}$/.test(tg)?tg.replace(/\D/g,''):'';
  window.open('https://wa.me/'+n+'?text='+encodeURIComponent(t),'_blank','noopener')};
 })();
+
+/* Zurücksetzen-Button im gewählten Farbtheme, Telegram-Bot @jugendkalender_bot */
+(()=>{const css=document.createElement('style');
+css.textContent='.danger{background:var(--acc);color:var(--on)}';
+document.head.appendChild(css);
+const BOT='jugendkalender_bot';
+$('#botYes').onclick=()=>{botOk=true;LS('jk_notif','1');$('#dBot').close();window.open('https://t.me/'+BOT+'?start=geburtstage','_blank','noopener')};
+})();
