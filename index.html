@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#2f4bff">
+<meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Geburtstage">
@@ -12,48 +12,54 @@
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <title>Jugendkalender</title>
 <style>
-:root{--bg:#fffdf6;--ink:#1a1a3d;--mut:#6b6b8d;--card:#fff;--line:#e6e2d3;--acc:#2f4bff;--sun:#ffd23f;--on:#fff;
+@font-face{font-family:"Cormorant Garamond";font-weight:400;font-style:normal;src:url(fonts/cormorant-garamond-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Cormorant Garamond";font-weight:400;font-style:italic;src:url(fonts/cormorant-garamond-latin-400-italic.woff2) format("woff2")}
+@font-face{font-family:"Cormorant Garamond";font-weight:600;font-style:normal;src:url(fonts/cormorant-garamond-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"Cormorant Garamond";font-weight:600;font-style:italic;src:url(fonts/cormorant-garamond-latin-600-italic.woff2) format("woff2")}
+@font-face{font-family:"Great Vibes";font-weight:400;src:url(fonts/great-vibes-latin-400-normal.woff2) format("woff2")}
+:root{--bg:#000;--ink:#fff;--mut:#9a9aa2;--card:#1c1c1e;--line:#2c2c2e;--acc:#e5263b;--on:#fff;--soft:#2c2c2e;color-scheme:dark;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media(prefers-color-scheme:dark){:root{--bg:#12122b;--ink:#f3f1ff;--mut:#a3a3c7;--card:#1c1c3b;--line:#2d2d55;--acc:#7b8cff;--on:#10102a}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;line-height:1.4}
 main{max-width:560px;margin:0 auto;padding:20px 16px 60px}
 header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
-h1{font-size:1.5rem;font-weight:800;margin:0;letter-spacing:-.02em;display:flex;align-items:center;gap:10px}
+h1{font-size:1.6rem;font-weight:800;margin:0;letter-spacing:-.02em;display:flex;align-items:center;gap:10px}
 .i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
 h1 .i{width:28px;height:28px;color:var(--acc)}
-button{font:inherit;cursor:pointer;border:0;border-radius:12px;padding:10px 14px;font-weight:600;display:inline-flex;align-items:center;gap:8px;justify-content:center}
+button{font:inherit;cursor:pointer;border:0;border-radius:16px;padding:11px 16px;font-weight:600;display:inline-flex;align-items:center;gap:8px;justify-content:center}
 button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
-.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.ghost{background:var(--card);color:var(--ink)}
 .pri{background:var(--acc);color:var(--on)}
-.today{background:var(--sun);color:#1a1a3d;border-radius:22px;padding:20px;margin-bottom:22px}
-.today h2{margin:0 0 10px;font-size:1rem;font-weight:600}
+#ref{width:44px;height:44px;padding:0;border-radius:50%}
+.hero{background:var(--acc);color:#fff;border-radius:28px;padding:22px;margin-bottom:22px}
+.hero h2{margin:0 0 10px;font-size:.8rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;opacity:.9}
 .t-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0}
-.t-item+.t-item{border-top:2px solid rgba(26,26,61,.15)}
+.t-item+.t-item{border-top:1px solid rgba(255,255,255,.3)}
 .t-age{font-size:3.4rem;font-weight:800;line-height:1;letter-spacing:-.04em}
-.t-name{font-weight:800;font-size:1.25rem}
-.today .pri{background:#1a1a3d;color:#fff;white-space:nowrap}
-.t-empty{font-size:1.1rem;font-weight:600}
-.sw{position:relative;margin-bottom:12px}
-.sw .i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--mut)}
-input[type=search]{width:100%;font:inherit;padding:14px 16px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink)}
-input[type=search]{padding-left:44px}
-h3{font-size:.95rem;margin:14px 0 6px;color:var(--mut);font-weight:600}
-.row{display:flex;align-items:center;gap:12px;padding:12px 4px;border-bottom:1px solid var(--line)}
-.dt{min-width:52px;text-align:center;font-weight:800;line-height:1.1}
-.dt small{display:block;font-weight:600;color:var(--mut);font-size:.72rem}
+.t-name{font-weight:700;font-size:1.25rem}
+.hero .pri{background:#fff;color:#000;white-space:nowrap}
+.t-empty{font-size:1.15rem;font-weight:600}
+.sw{position:relative;margin-bottom:8px}
+.sw .i{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--mut)}
+input[type=search]{width:100%;font:inherit;padding:15px 16px 15px 46px;border-radius:20px;border:0;background:var(--card);color:var(--ink)}
+h3{font-size:.8rem;margin:20px 6px 8px;color:var(--mut);font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.row{display:flex;align-items:center;gap:14px;padding:10px 12px;margin-bottom:8px;background:var(--card);border-radius:22px}
+.dt{width:54px;height:54px;border-radius:16px;background:var(--soft);display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;font-size:1.2rem;line-height:1}
+.dt small{font-weight:600;color:var(--mut);font-size:.7rem;margin-top:3px}
+.row.now .dt{background:var(--acc)}.row.now .dt small{color:#fff}
 .who{flex:1;min-width:0}
 .who b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .who span{color:var(--mut);font-size:.85rem}
-.row .ghost{padding:9px 11px}
-dialog{border:0;border-radius:20px;padding:20px;width:min(92vw,480px);background:var(--card);color:var(--ink)}
-dialog::backdrop{background:rgba(10,10,30,.55)}
+.row .ghost{background:var(--soft);color:var(--acc);padding:10px 12px}
+.hint{color:var(--mut);font-size:.85rem;margin:8px 6px}
+dialog{border:0;border-radius:28px;padding:18px;width:min(94vw,520px);max-height:94vh;background:var(--card);color:var(--ink)}
+dialog::backdrop{background:rgba(0,0,0,.7)}
 dialog h2{margin:0 0 10px;font-size:1.2rem}
-textarea{width:100%;font:inherit;padding:12px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink);resize:vertical}
+#cv{display:block;max-width:100%;max-height:46vh;width:auto;height:auto;margin:0 auto 12px;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.5)}
+textarea{width:100%;font:inherit;padding:12px;border-radius:16px;border:0;background:var(--soft);color:var(--ink);resize:vertical}
+dialog .ghost{background:var(--soft)}
 .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-.hint{color:var(--mut);font-size:.85rem;margin:8px 0}
-label{display:block;font-weight:600;font-size:.9rem;margin:12px 0 6px}
-.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#fff;color:#000;padding:10px 18px;border-radius:16px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s;z-index:9}
 .toast.on{opacity:1}
 @media(prefers-reduced-motion:reduce){.toast{transition:none}}
 </style>
@@ -67,15 +73,13 @@ label{display:block;font-weight:600;font-size:.9rem;margin:12px 0 6px}
 <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></symbol>
 <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
 <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
-<symbol id="i-sheet" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></symbol>
 <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5"/></symbol>
-<symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+<symbol id="i-shuffle" viewBox="0 0 24 24"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></symbol>
 </svg>
-
 <main>
 <header><h1><svg class="i"><use href="#i-cake"/></svg>Jugendkalender</h1>
-<div><button class="ghost" id="ref" aria-label="Geburtstage aktualisieren"><svg class="i"><use href="#i-refresh"/></svg>Aktualisieren</button></div></header>
-<section class="today" id="today" aria-live="polite"></section>
+<button class="ghost" id="ref" aria-label="Aktualisieren" title="Aktualisieren"><svg class="i"><use href="#i-refresh"/></svg></button></header>
+<section class="hero" id="today" aria-live="polite"></section>
 <div class="sw"><svg class="i"><use href="#i-search"/></svg><input type="search" id="q" placeholder="Name suchen" aria-label="Name suchen" autocomplete="off"></div>
 <div id="list"></div>
 <p class="hint" id="st" role="status"></p>
@@ -83,70 +87,145 @@ label{display:block;font-weight:600;font-size:.9rem;margin:12px 0 6px}
 
 <dialog id="dGrat">
 <h2 id="gTitle">Gratulieren</h2>
-<textarea id="gMsg" rows="4" aria-label="Nachricht"></textarea>
-<p class="hint" id="gHint"></p>
+<canvas id="cv" aria-label="Vorschau der Glückwunschkarte"></canvas>
+<textarea id="gMsg" rows="5" aria-label="Nachricht für Telegram"></textarea>
 <div class="acts">
+<button class="pri" id="gImg"><svg class="i"><use href="#i-image"/></svg>Karte teilen</button>
 <button class="pri" id="gTg"><svg class="i"><use href="#i-send"/></svg>Telegram</button>
-<button class="pri" id="gImg"><svg class="i"><use href="#i-image"/></svg>Bild teilen</button>
+<button class="ghost" id="gNew"><svg class="i"><use href="#i-shuffle"/></svg>Neu mischen</button>
 <button class="ghost" id="gCopy"><svg class="i"><use href="#i-copy"/></svg>Kopieren</button>
 <button class="ghost" id="gClose"><svg class="i"><use href="#i-x"/></svg>Schließen</button>
 </div>
 </dialog>
-
 <div class="toast" id="toast" role="status"></div>
 
 <script>
-/* Die Geburtstage kommen aus der Datei geburtstage.csv im selben Ordner.
-   Spalten: Name;Geburtsdatum (TT.MM.JJJJ);Telegram (optional) */
-const DATA_FILE = "geburtstage.csv";
+const DATA_FILE="geburtstage.csv";
 /* Reihenfolge der Namen in der Datei: "nachname vorname" (z. B. Nezlaw Bettina) oder "vorname nachname" */
-const NAME_ORDER = "nachname vorname";
+const NAME_ORDER="nachname vorname";
+/* Bibelverse (Lutherbibel 1912, Rechtschreibung angepasst). Hier kannst du Verse ergänzen oder ändern. */
+const VERSES=[
+["Dies ist der Tag, den der HERR macht; lasst uns freuen und fröhlich darin sein.","Psalm 118,24"],
+["Der HERR segne dich und behüte dich; der HERR lasse sein Angesicht leuchten über dir und sei dir gnädig; der HERR hebe sein Angesicht über dich und gebe dir Frieden.","4. Mose 6,24–26"],
+["Meine Zeit steht in deinen Händen.","Psalm 31,16"],
+["Dein Wort ist meines Fußes Leuchte und ein Licht auf meinem Wege.","Psalm 119,105"],
+["Ich will dich unterweisen und dir den Weg zeigen, den du wandeln sollst; ich will dich mit meinen Augen leiten.","Psalm 32,8"],
+["Befiehl dem HERRN deine Wege und hoffe auf ihn, er wird's wohl machen.","Psalm 37,5"],
+["Fürchte dich nicht, ich bin mit dir; weiche nicht, denn ich bin dein Gott; ich stärke dich, ich helfe dir auch.","Jesaja 41,10"],
+["Der HERR behüte deinen Ausgang und Eingang von nun an bis in Ewigkeit!","Psalm 121,8"],
+["Denn er hat seinen Engeln befohlen über dir, dass sie dich behüten auf allen deinen Wegen.","Psalm 91,11"],
+["Der Gott der Hoffnung aber erfülle euch mit aller Freude und Frieden im Glauben.","Römer 15,13"],
+["Verlass dich auf den HERRN von ganzem Herzen; gedenke an ihn in allen deinen Wegen, so wird er dich recht führen.","Sprüche 3,5–6"],
+["Ich vermag alles durch den, der mich mächtig macht, Christus.","Philipper 4,13"],
+["Sei getrost und unverzagt; denn der HERR, dein Gott, ist mit dir in allem, was du tun wirst.","Josua 1,9"]];
 
 const $=s=>document.querySelector(s);
 const ic=n=>`<svg class="i" aria-hidden="true"><use href="#i-${n}"/></svg>`;
-const DEMO=[["Mia Berger","2008-10-06","@mia_b"],["Jonas Weber","2009-10-09",""],["Lea Schmitt","2007-10-21","@leas"],["Ben Fischer","2010-11-02",""],["Emma Wolf","2008-01-15",""],["Paul Koch","2009-03-30",""]];
+const DEMO=[["Berger Mia","2008-10-06","@mia_b","f"],["Weber Jonas","2009-10-09","","m"],["Schmitt Lea","2007-10-21","@leas","f"],["Fischer Ben","2010-11-02","","m"],["Wolf Emma","2008-01-15","","f"],["Koch Paul","2009-03-30","","m"]];
 const LS=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}};
-let data=[];
-function toP(r){const d=pDate(r[1]);return d?{n:(r[0]||'').trim(),y:d.y,m:d.m,d:d.d,tg:(r[2]||'').trim()}:null}
 function pDate(s){s=(s||'').trim();let a;
  if(a=s.match(/^(\d{1,2})\.(\d{1,2})\.(\d{2,4})$/)){let y=+a[3];if(y<100)y+=y>30?1900:2000;return{d:+a[1],m:+a[2],y}}
  if(a=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))return{y:+a[1],m:+a[2],d:+a[3]};
  if(a=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/))return{m:+a[1],d:+a[2],y:+a[3]};return null}
-try{data=JSON.parse(LS('jk_data')||'null')}catch(e){}
+function toP(r){const d=pDate(r[1]);return d?{n:(r[0]||'').trim(),y:d.y,m:d.m,d:d.d,tg:(r[2]||'').trim(),g:r[3]||''}:null}
+let data=null;try{data=JSON.parse(LS('jk_data')||'null')}catch(e){}
 if(!data)data=DEMO.map(toP);
-function save(){LS('jk_data',JSON.stringify(data))}
-function leap(y){return y%4==0&&(y%100!=0||y%400==0)}
+const save=()=>LS('jk_data',JSON.stringify(data));
+const leap=y=>y%4==0&&(y%100!=0||y%400==0);
 function next(p){const t=new Date();t.setHours(0,0,0,0);let y=t.getFullYear();
  const mk=y=>new Date(y,p.m-1,(p.m==2&&p.d==29&&!leap(y))?28:p.d);
  let dt=mk(y);if(dt<t){y++;dt=mk(y)}
  return{date:dt,days:Math.round((dt-t)/864e5),age:y-p.y}}
-const MON=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+const MN=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+const WD=['So','Mo','Di','Mi','Do','Fr','Sa'],WDL=['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
 const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function names(p){const w=p.n.split(/\s+/);if(w.length<2)return{fn:p.n,ln:''};
+ return NAME_ORDER==='vorname nachname'?{fn:w[0],ln:w.slice(1).join(' ')}:{fn:w.slice(1).join(' '),ln:w[0]}}
+const gr=p=>p.g==='f'?'Liebe':p.g==='m'?'Lieber':'Liebe(r)';
+
+/* ---------- Landschaft (Karte und Kopfbereich) ---------- */
+const PAL=[
+{sky:['#7fa9cf','#f6d9b0','#f4a977'],sun:'#fff1c9',fog:'#ffe6c4',hills:['#a9b8b0','#7fa08f','#5b866f','#3d6a57','#264c3e']},
+{sky:['#5da2e0','#b9e0f5','#f6f1d6'],sun:'#fffbe0',fog:'#ffffff',hills:['#b4d6b0','#88bd86','#5fa068','#3f8050','#2b6040']},
+{sky:['#3b4b7c','#c56a7c','#f4aa5e'],sun:'#ffe2a8',fog:'#f7c8a0',hills:['#8a769b','#66618c','#4a5278','#323d62','#212b4a']},
+{sky:['#9cc2d6','#f2dfb9','#f0b46c'],sun:'#fff0c4',fog:'#f7dcae',hills:['#d2ac66','#bb8744','#946432','#6e4d2e','#443b2a']}];
+const rng=s=>()=>(s=(s*16807)%2147483647)/2147483647;
+function landscape(x,W,H,seed,pi){
+ const R=rng(Math.abs(seed)*7+13),P=PAL[pi%PAL.length],k=W/1600;
+ let g=x.createLinearGradient(0,0,0,H*.66);g.addColorStop(0,P.sky[0]);g.addColorStop(.6,P.sky[1]);g.addColorStop(1,P.sky[2]);
+ x.fillStyle=g;x.fillRect(0,0,W,H);
+ const sx=W*(.25+R()*.5),sy=H*(.3+R()*.1),sr=Math.min(W,H)*.05;
+ g=x.createRadialGradient(sx,sy,0,sx,sy,sr*7);g.addColorStop(0,P.sun+'ff');g.addColorStop(.2,P.sun+'99');g.addColorStop(1,P.sun+'00');
+ x.fillStyle=g;x.fillRect(0,0,W,H);
+ x.fillStyle=P.sun;x.beginPath();x.arc(sx,sy,sr,0,7);x.fill();
+ x.fillStyle='rgba(255,255,255,.2)';
+ for(let i=0;i<6;i++){const cx=R()*W,cy=H*(.08+R()*.3),w=(120+R()*220)*k;for(let j=0;j<4;j++){x.beginPath();x.ellipse(cx+(j-1.5)*w*.3,cy+(j%2)*10*k,w*.4,w*.11,0,0,7);x.fill()}}
+ for(let i=0;i<5;i++){const base=H*(.52+i*.085),amp=H*(.12-i*.014),ph=[R()*9,R()*9,R()*9],f=[1.2+R(),3+R()*2,7+R()*3];
+  const y=xx=>{const t=xx/W*6.283;return base-amp*(i<2?.6*(1-Math.abs(Math.sin(t*f[0]*.7+ph[0])))+.25*Math.sin(t*f[1]+ph[1])+.15*Math.sin(t*f[2]+ph[2]):.5*Math.sin(t*f[0]*.6+ph[0])+.3*Math.sin(t*f[1]*.7+ph[1])+.2*Math.sin(t*f[2]*.5+ph[2]))};
+  const path=()=>{x.beginPath();x.moveTo(0,H);for(let xx=0;xx<=W;xx+=6)x.lineTo(xx,y(xx));x.lineTo(W,H);x.closePath()};
+  path();x.fillStyle=P.hills[i];x.fill();
+  if(i<3){g=x.createLinearGradient(0,base-amp,0,base+amp);g.addColorStop(0,P.fog+'00');g.addColorStop(1,P.fog+'88');path();x.fillStyle=g;x.fill()}
+  if(i>=2){x.fillStyle=P.hills[i];for(let xx=0;xx<W;xx+=(26+R()*50)*k){const yy=y(xx),h=(40+R()*80)*k*(.6+i*.22);
+   for(let s=0;s<3;s++){const w=h*(.5-s*.1),top=yy-h+s*h*.28;x.beginPath();x.moveTo(xx,top);x.lineTo(xx-w/2,top+h*.42);x.lineTo(xx+w/2,top+h*.42);x.closePath();x.fill()}}}}
+ x.strokeStyle='rgba(40,50,60,.5)';x.lineWidth=2.5*k;
+ for(let i=0;i<5;i++){const bx=W*(.1+R()*.8),by=H*(.12+R()*.2),s=(10+R()*12)*k;x.beginPath();x.moveTo(bx-s,by);x.quadraticCurveTo(bx-s/2,by-s/2,bx,by);x.quadraticCurveTo(bx+s/2,by-s/2,bx+s,by);x.stroke()}}
+
+/* ---------- Karte (A4) ---------- */
+let fontP;const fonts=()=>fontP||(fontP=Promise.all(['400 60px "Cormorant Garamond"','italic 400 60px "Cormorant Garamond"','600 60px "Cormorant Garamond"','400 60px "Great Vibes"'].map(f=>document.fonts.load(f,'Äöß„“')))).catch(()=>{});
+async function drawCard(cv,p,age,seed,vi){
+ await fonts();
+ const W=1654,H=2339,x=cv.getContext('2d'),v=VERSES[vi%VERSES.length];cv.width=W;cv.height=H;
+ landscape(x,W,H,seed,seed%4);
+ const PW=1320,mw=PW-230,INK='#1e2b27',GOLD='#a8832f',CG='"Cormorant Garamond",Georgia,serif',GV='"Great Vibes",Georgia,serif';
+ const wrap=(t,f)=>{x.font=f;const o=[];let l='';t.split(' ').forEach(w=>{const n=l?l+' '+w:w;if(x.measureText(n).width>mw&&l){o.push(l);l=w}else l=n});o.push(l);return o};
+ const items=[],add=(h,f)=>items.push({h,f});
+ const txt=(t,font,col,lh,gap,ls)=>{const L=wrap(t,font);add(L.length*lh+gap,y=>{x.font=font;x.fillStyle=col;x.letterSpacing=ls||'0px';L.forEach((l,i)=>x.fillText(l,W/2,y+lh*i+lh*.72))})};
+ const orn=gap=>add(40+gap,y=>{x.strokeStyle=GOLD;x.lineWidth=3;x.beginPath();x.moveTo(W/2-170,y+20);x.lineTo(W/2-34,y+20);x.moveTo(W/2+34,y+20);x.lineTo(W/2+170,y+20);x.stroke();x.fillStyle=GOLD;x.beginPath();x.moveTo(W/2,y+6);x.lineTo(W/2+14,y+20);x.lineTo(W/2,y+34);x.lineTo(W/2-14,y+20);x.fill()});
+ const fit=(t,fam,s)=>{do{x.font=`${s}px ${fam}`;s-=6}while(x.measureText(t).width>mw&&s>60);return s+6};
+ x.textAlign='center';x.textBaseline='alphabetic';
+ orn(30);
+ txt('HERZLICHEN GLÜCKWUNSCH',`600 42px ${CG}`,GOLD,60,40,'8px');
+ const gt=`${gr(p)} ${names(p).fn},`,gs=fit(gt,GV,200);txt(gt,`${gs}px ${GV}`,INK,gs*1.05,30);
+ txt('ich wünsche dir alles Gute und Gottes reichen Segen zu deinem',`400 58px ${CG}`,INK,78,0);
+ txt(age+'.',`300px ${GV}`,GOLD,270,0);
+ txt('Geburtstag',`600 italic 70px ${CG}`,INK,96,24);
+ txt('Möge er dich führen und immer ein fester Anker in deinem Leben sein.',`400 58px ${CG}`,INK,78,30);
+ orn(30);
+ txt('„'+v[0]+'“',`italic 400 54px ${CG}`,INK,74,26);
+ txt('– '+v[1].toUpperCase()+' –',`600 38px ${CG}`,GOLD,52,0,'5px');
+ const pad=90,tot=items.reduce((a,b)=>a+b.h,0),ph=tot+pad*2,py=(H-ph)/2,px=(W-PW)/2;
+ x.save();x.shadowColor='rgba(0,0,0,.35)';x.shadowBlur=60;x.shadowOffsetY=16;x.fillStyle='rgba(255,250,240,.9)';x.beginPath();x.roundRect(px,py,PW,ph,36);x.fill();x.restore();
+ x.strokeStyle=GOLD;x.lineWidth=3;x.beginPath();x.roundRect(px+24,py+24,PW-48,ph-48,24);x.stroke();
+ let y=py+pad;items.forEach(i=>{i.f(y);y+=i.h});x.letterSpacing='0px'}
+
+/* ---------- Liste ---------- */
 function render(){
- const all=data.map(p=>({p,...next(p)})).sort((a,b)=>a.days-b.days);
- const td=all.filter(x=>x.days==0);
- const T=$('#today');
- if(!all.length){T.innerHTML='<div class="t-empty">Noch keine Daten. Mit dem Internet verbinden und oben auf Aktualisieren tippen.</div>'}
- else if(td.length){T.innerHTML='<h2>Heute Geburtstag</h2>'+td.map(x=>`<div class="t-item"><div><div class="t-name">${esc(x.p.n)}</div><div class="t-age">${x.age}</div></div><button class="pri" data-g="${data.indexOf(x.p)}">${ic('gift')}Gratulieren</button></div>`).join('')}
- else{const n=all[0];T.innerHTML=`<div class="t-empty">Heute hat niemand Geburtstag.<br>Als Nächstes: ${esc(n.p.n)} wird ${n.age}, ${n.days==1?'morgen':'in '+n.days+' Tagen'}.</div>`}
+ const all=data.map(p=>({p,...next(p)})).sort((a,b)=>a.days-b.days||a.p.n.localeCompare(b.p.n,'de'));
+ const td=all.filter(x=>x.days==0),T=$('#today');
+ if(!all.length)T.innerHTML='<div class="t-empty">Noch keine Daten. Tippe oben auf Aktualisieren.</div>';
+ else if(td.length)T.innerHTML='<h2>Heute Geburtstag</h2>'+td.map(x=>`<div class="t-item"><div><div class="t-name">${esc(x.p.n)}</div><div class="t-age">${x.age}</div></div><button class="pri" data-g="${data.indexOf(x.p)}">${ic('gift')}Gratulieren</button></div>`).join('');
+ else T.innerHTML='<div class="t-empty">Heute stehen keine Geburtstage an.</div>';
  const q=$('#q').value.trim().toLowerCase();
- let items,head;
- if(q){items=all.filter(x=>x.p.n.toLowerCase().includes(q)).sort((a,b)=>a.p.n.localeCompare(b.p.n,'de')).slice(0,60);head=items.length?'':'<p class="hint">Keine Treffer.</p>'}
- else{items=all.filter(x=>x.days>0&&x.days<=60).slice(0,20);head='<h3>Demnächst</h3>'}
- $('#list').innerHTML=head+items.map(x=>{
+ const items=q?all.filter(x=>x.p.n.toLowerCase().includes(q)).sort((a,b)=>a.p.n.localeCompare(b.p.n,'de')):all;
+ let h=q&&!items.length?'<p class="hint">Keine Treffer.</p>':'',last=-1;
+ items.forEach(x=>{
+  if(!q){const k=x.date.getFullYear()*12+x.date.getMonth();if(k!==last){h+=`<h3>${MN[x.date.getMonth()]} ${x.date.getFullYear()}</h3>`;last=k}}
   const w=x.days==0?'heute':x.days==1?'morgen':`in ${x.days} Tagen`;
-  return `<div class="row"><div class="dt">${x.date.getDate()}.<small>${MON[x.date.getMonth()]}</small></div><div class="who"><b>${esc(x.p.n)}</b><span>wird ${x.age} · ${w}</span></div><button class="ghost" data-g="${data.indexOf(x.p)}" aria-label="Gratulieren ${esc(x.p.n)}">${ic('gift')}</button></div>`}).join('')}
+  h+=`<div class="row${x.days==0?' now':''}"><div class="dt"><b>${x.date.getDate()}</b><small>${WD[x.date.getDay()]}</small></div><div class="who"><b>${esc(x.p.n)}</b><span>wird ${x.age} · ${w}</span></div><button class="ghost" data-g="${data.indexOf(x.p)}" aria-label="Gratulieren ${esc(x.p.n)}">${ic('gift')}</button></div>`});
+ $('#list').innerHTML=h;
+ if(!$('#st').dataset.m)$('#st').textContent=`${data.length} Geburtstage`}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-g]');if(b)openG(+b.dataset.g)});
 $('#q').addEventListener('input',render);
 
+/* ---------- Gratulieren ---------- */
 let cur=null;
-function names(p){const w=p.n.split(/\s+/);if(w.length<2)return{fn:p.n,ln:''};
- return NAME_ORDER==='vorname nachname'?{fn:w[0],ln:w.slice(1).join(' ')}:{fn:w.slice(1).join(' '),ln:w[0]}}
-function msg(p){const a=next(p).age;return `Alles Gute zum ${a}. Geburtstag, ${names(p).fn}! Feier schön und lass dich ordentlich feiern!`}
-function openG(i){const p=data[i];if(!p)return;cur={p,age:next(p).age};
- $('#gTitle').textContent='Gratulieren: '+p.n;$('#gMsg').value=msg(p);
- $('#gHint').textContent=p.tg?'Telegram: '+p.tg:'Kein Telegram-Kontakt hinterlegt. Beim Senden wählst du den Chat selbst aus.';
- $('#dGrat').showModal()}
+const rnd=n=>Math.floor(Math.random()*n);
+function msg(){const p=cur.p,v=VERSES[cur.vi%VERSES.length];
+ return `${gr(p)} ${names(p).fn}, ich wünsche dir alles Gute und Gottes reichen Segen zu deinem ${cur.age}. Geburtstag. Möge er dich führen und immer ein fester Anker in deinem Leben sein.\n\n„${v[0]}“\n– ${v[1]}`}
+async function shuffle(){cur.seed=1+rnd(99999);cur.vi=rnd(VERSES.length);$('#gMsg').value=msg();await drawCard($('#cv'),cur.p,cur.age,cur.seed,cur.vi)}
+async function openG(i){const p=data[i];if(!p)return;cur={p,age:next(p).age};
+ $('#gTitle').textContent='Gratulieren: '+names(p).fn;$('#dGrat').showModal();await shuffle()}
+$('#gNew').onclick=shuffle;
 $('#gClose').onclick=()=>$('#dGrat').close();
 function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),2200)}
 async function copy(t){try{await navigator.clipboard.writeText(t);return true}catch(e){return false}}
@@ -156,21 +235,12 @@ $('#gTg').onclick=async()=>{const t=$('#gMsg').value,tg=cur.p.tg.replace(/\s/g,'
  else if(/^\+?\d{6,}$/.test(tg)){await copy(t);toast('Text kopiert, im Chat einfügen');url=`https://t.me/${tg.startsWith('+')?tg:'+'+tg}`}
  else url=`https://t.me/share/url?url=%20&text=${encodeURIComponent(t)}`;
  window.open(url,'_blank','noopener')};
-$('#gImg').onclick=async()=>{const c=card(cur.p,cur.age);
- const blob=await new Promise(r=>c.toBlob(r,'image/png'));const file=new File([blob],'glueckwunsch.png',{type:'image/png'});
+$('#gImg').onclick=async()=>{const blob=await new Promise(r=>$('#cv').toBlob(r,'image/png'));
+ const file=new File([blob],'glueckwunsch-'+names(cur.p).fn.replace(/\W+/g,'')+'.png',{type:'image/png'});
  try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],text:$('#gMsg').value});return}}catch(e){if(e.name==='AbortError')return}
- const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='glueckwunsch.png';a.click();toast('Bild gespeichert')};
-function card(p,age){const c=document.createElement('canvas');c.width=c.height=1080;const x=c.getContext('2d');
- x.fillStyle='#2f4bff';x.fillRect(0,0,1080,1080);
- let s=p.n.length*7+age;const rnd=()=>(s=(s*9301+49297)%233280)/233280;
- const cols=['#ffd23f','#ffffff','#ff6b9d','#5ee6c1'];
- for(let i=0;i<70;i++){x.fillStyle=cols[i%4];x.globalAlpha=.85;x.beginPath();x.arc(rnd()*1080,rnd()*1080,6+rnd()*18,0,7);x.fill()}
- x.globalAlpha=1;x.fillStyle='#ffd23f';x.beginPath();x.arc(540,470,300,0,7);x.fill();
- x.textAlign='center';x.fillStyle='#1a1a3d';x.font='800 330px system-ui,sans-serif';x.fillText(age,540,585);
- x.fillStyle='#fff';x.font='800 84px system-ui,sans-serif';x.fillText('Alles Gute zum Geburtstag!',540,870);
- const nn=names(p),full=(nn.fn+' '+nn.ln).trim();let fs=100;x.font=`800 ${fs}px system-ui,sans-serif`;while(x.measureText(full).width>940&&fs>40){fs-=6;x.font=`800 ${fs}px system-ui,sans-serif`}
- x.fillStyle='#ffd23f';x.fillText(full,540,980);return c}
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=file.name;a.click();toast('Karte gespeichert')};
 
+/* ---------- Daten ---------- */
 function csv(t,dl){const out=[];let row=[],c='',q=false;
  for(let i=0;i<t.length;i++){const ch=t[i];
   if(q){if(ch=='"'){if(t[i+1]=='"'){c+='"';i++}else q=false}else c+=ch}
@@ -181,25 +251,25 @@ function csv(t,dl){const out=[];let row=[],c='',q=false;
  row.push(c);out.push(row);return out}
 function fixEnc(t){if(!/Ã[\u0080-\u00BF]/.test(t))return t;
  try{return new TextDecoder('utf-8',{fatal:true}).decode(Uint8Array.from(t,c=>{const k=c.charCodeAt(0);if(k>255)throw 0;return k}))}catch(e){return t}}
-/* Findet pro Zeile das erste Datum; der Name ist die Textzelle direkt davor. Alle anderen Spalten werden ignoriert. */
+/* Pro Zeile: erstes Datum finden, Name = Textzelle davor, Schwester/Bruder = Geschlecht, @name = Telegram */
 function parse(t){t=fixEnc(t.replace(/^\uFEFF/,''));
  const head=t.slice(0,3000),cnt=d=>head.split(d).length;
  const dl=[',',';','\t'].sort((a,b)=>cnt(b)-cnt(a))[0],out=[];
  for(const r of csv(t,dl)){const c=r.map(x=>x.trim());const di=c.findIndex(x=>pDate(x));if(di<0)continue;
-  const isT=x=>/[A-Za-zÀ-ÿ]/.test(x)&&!/^(@|\+)/.test(x);
+  const isT=x=>/[A-Za-zÀ-ÿ]/.test(x)&&!/^(@|\+)/.test(x)&&!/^(schwester|bruder)$/i.test(x);
   let ni=-1;for(let i=di-1;i>=0&&ni<0;i--)if(isT(c[i]))ni=i;
   for(let i=di+1;i<c.length&&ni<0;i++)if(isT(c[i]))ni=i;
   if(ni<0)continue;
-  const tg=c.find(x=>/^(@\w{4,}|\+\d{6,})$/.test(x))||'';
-  const p=toP([c[ni],c[di],tg]);if(p)out.push(p)}
+  const tg=c.find(x=>/^(@\w{4,}|\+\d{6,})$/.test(x))||'',gc=c.find(x=>/^(schwester|bruder|weiblich|männlich)$/i.test(x))||'';
+  const p=toP([c[ni],c[di],tg,/^(schwester|weiblich)$/i.test(gc)?'f':gc?'m':'']);if(p)out.push(p)}
  return out}
-function status(t){const e=$('#st');if(e)e.textContent=t}
+function status(t){const e=$('#st');e.dataset.m=1;e.textContent=t}
 async function loadDB(quiet){
  try{const r=await fetch(DATA_FILE,{cache:'no-store'});
   if(!r.ok){status(`${DATA_FILE} nicht gefunden (Fehler ${r.status}). Es werden gespeicherte oder Beispieldaten gezeigt.`);if(!quiet)toast('Datei nicht gefunden');return}
   const txt=await r.text(),rows=parse(txt);
   if(!rows.length){status(`${DATA_FILE} gefunden, aber keine Zeile mit gültigem Datum (TT.MM.JJJJ). Erste Zeile: ${txt.split(/\r?\n/)[0].slice(0,80)}`);if(!quiet)toast('Keine gültigen Zeilen in der Datei');return}
-  data=rows;save();render();status(rows.length+' Geburtstage geladen');if(!quiet)toast(rows.length+' Geburtstage aktualisiert')}
+  data=rows;save();$('#st').dataset.m='';render();if(!quiet)toast(rows.length+' Geburtstage aktualisiert')}
  catch(e){status('Keine Verbindung. Es werden gespeicherte Daten gezeigt.');if(!quiet)toast('Aktualisieren nicht möglich')}}
 $('#ref').onclick=()=>loadDB(false);
 
