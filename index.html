@@ -321,11 +321,17 @@ async function drawCard(p,age,vi){
 /* ---------- Liste ---------- */
 function render(){
  const all=data.map(p=>({p,...next(p)})).sort((a,b)=>a.days-b.days||a.p.n.localeCompare(b.p.n,'de'));
- const td=all.filter(x=>x.days==0),T=$('#today');
- if(!all.length)T.innerHTML='<div class="t-empty">Noch keine Daten. Tippe oben auf Aktualisieren.</div>';
- else if(td.length)T.innerHTML='<h2>Heute Geburtstag</h2>'+td.map(x=>`<div class="t-item"><div><div class="t-name">${esc(x.p.n)}</div><div class="t-age">${x.age}</div></div><button class="pri" data-g="${data.indexOf(x.p)}">${ic('gift')}Gratulieren</button></div>`).join('');
- else T.innerHTML='<div class="t-empty">Heute stehen keine Geburtstage an.</div>';
  const q=$('#q').value.trim().toLowerCase();
+ const T=$('#today');
+ T.hidden = !!q;
+
+ if(!q){
+  const td=all.filter(x=>x.days==0);
+  if(!all.length)T.innerHTML='<div class="t-empty">Noch keine Daten. Tippe oben auf Aktualisieren.</div>';
+  else if(td.length)T.innerHTML='<h2>Heute Geburtstag</h2>'+td.map(x=>`<div class="t-item"><div><div class="t-name">${esc(x.p.n)}</div><div class="t-age">${x.age}</div></div><button class="pri" data-g="${data.indexOf(x.p)}">${ic('gift')}Gratulieren</button></div>`).join('');
+  else T.innerHTML='<div class="t-empty">Heute stehen keine Geburtstage an.</div>';
+ }
+
  const items=q?all.filter(x=>x.p.n.toLowerCase().includes(q)).sort((a,b)=>a.p.n.localeCompare(b.p.n,'de')):all;
  let h=q&&!items.length?'<p class="hint">Keine Treffer.</p>':'',last=-1;
  items.forEach(x=>{
@@ -519,7 +525,7 @@ $('#nHome').onclick=()=>show('home');$('#nSet').onclick=()=>show('set');
 /* Zoom: 100 % ist Standard */
 function setZoom(p,keep){p=Math.round(Math.min(150,Math.max(70,+p||100))/5)*5;
  document.documentElement.style.zoom=p===100?'':String(p/100);
- $('#zVal').textContent=p+' %';$('#zTxt').textContent=p+' %';$('#zRange').value=p;
+ $('#zVal').textContent=p+' %';$('#zTxt').textContent=p+' \%';$('#zRange').value=p;
  if(!keep)LS('jk_zoom',String(p));return p}
 $('#rZoom').onclick=()=>$('#dZoom').showModal();
 $('#zRange').addEventListener('input',e=>setZoom(e.target.value));
