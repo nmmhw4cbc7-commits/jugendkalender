@@ -1,4 +1,4 @@
-const CACHE = 'jugendkalender-v2.10';
+const CACHE = 'jugendkalender-v2.11';
 const SHELL = ['./', './index.html', './kalender.js', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/maskable-512.png'];
 const FONTS = ['cormorant-garamond-latin-400-italic','cormorant-garamond-latin-400-normal','cormorant-garamond-latin-600-italic','cormorant-garamond-latin-600-normal','great-vibes-latin-400-normal'].map(f => './fonts/' + f + '.woff2');
 
