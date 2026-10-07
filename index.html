@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" id="vp" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -100,6 +100,7 @@ nav button[aria-current=page]{color:var(--acc)}
 .lnks{display:inline-block;margin-top:6px}
 .lnk{background:none;padding:0;border-radius:0;display:inline;font:inherit;font-weight:400;color:inherit;text-decoration:underline;cursor:pointer}
 .foot{color:var(--mut);font-size:.8rem;margin:8px 16px}
+@media(display-mode:standalone){html,body{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%}}
 @media(prefers-reduced-motion:reduce){.toast,.ind,nav button,.tg,.tg::after{transition:none}.tg.go::after{animation:none}}
 </style>
 </head>
@@ -411,6 +412,14 @@ $('#nHome').onclick=()=>show('home');$('#nSet').onclick=()=>show('set');
   ind.classList.remove('drag');void ind.offsetWidth;
   show(tx>max()/2?'set':'home');ind.style.transform=''};
  nav.addEventListener('pointerup',end);nav.addEventListener('pointercancel',end)})();
+
+/* Zoom komplett sperren, wenn die App installiert ist (Doppeltippen und Pinch) */
+(()=>{const inst=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;if(!inst)return;
+ $('#vp').setAttribute('content','width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover');
+ ['gesturestart','gesturechange','gestureend'].forEach(n=>document.addEventListener(n,e=>e.preventDefault()));
+ document.addEventListener('touchmove',e=>{if(e.touches.length>1)e.preventDefault()},{passive:false});
+ let lt=0;document.addEventListener('touchend',e=>{const n=Date.now();if(n-lt<350&&!e.target.closest('input,textarea'))e.preventDefault();lt=n},{passive:false});
+ document.addEventListener('dblclick',e=>e.preventDefault())})();
 
 showUpd();showVer();
 render();
