@@ -19,7 +19,7 @@
 @font-face{font-family:"Great Vibes";font-weight:400;src:url(fonts/great-vibes-latin-400-normal.woff2) format("woff2")}
 :root{--bg:#000;--ink:#fff;--mut:#9a9aa2;--card:#1c1c1e;--line:#2c2c2e;--acc:#e5263b;--on:#fff;--inv:#000;--soft:#2c2c2e;color-scheme:dark;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-*{box-sizing:border-box}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;line-height:1.4}
 main{max-width:560px;margin:0 auto;padding:20px 16px 120px}
 [hidden]{display:none!important}
@@ -28,7 +28,7 @@ h1{font-size:1.6rem;font-weight:800;margin:0;letter-spacing:-.02em;display:flex;
 .i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
 h1 .i{width:28px;height:28px;color:var(--acc)}
 button{font:inherit;cursor:pointer;border:0;border-radius:16px;padding:11px 16px;font-weight:600;display:inline-flex;align-items:center;gap:8px;justify-content:center}
-button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+button,input,textarea,dialog,select{outline:none}
 .ghost{background:var(--card);color:var(--ink)}
 .pri{background:var(--acc);color:var(--on)}
 #ref{width:44px;height:44px;padding:0;border-radius:50%}
@@ -102,6 +102,17 @@ nav button[aria-current=page]{color:var(--acc)}
 .stand{color:var(--mut);font-size:.8rem}
 .lnks{display:inline-block;margin-top:6px}
 .lnk{background:none;padding:0;border-radius:0;display:inline;font:inherit;font-weight:400;color:inherit;text-decoration:underline;cursor:pointer}
+/* iOS-26-Hinweisfenster (Update, Zurücksetzen) */
+#dUpd,#dRst{width:min(calc(100vw - 48px),340px);padding:22px 16px 16px;border-radius:34px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+#dUpd::backdrop,#dRst::backdrop{background:rgba(0,0,0,.3)}
+#dUpd[open],#dRst[open]{animation:alertIn .4s cubic-bezier(.34,1.3,.5,1)}
+@keyframes alertIn{from{opacity:0;transform:scale(.9)}}
+#dUpd h2,#dRst h2{font-size:1.1rem;font-weight:700;margin:0 6px 6px}
+#dUpd .hint,#dRst .hint{margin:0 6px 20px;font-size:.95rem;color:var(--ink)}
+#dUpd .acts,#dRst .acts{flex-wrap:nowrap;gap:8px;margin-top:0}
+#dUpd .acts button,#dRst .acts button{flex:1;height:52px;padding:0 10px;border-radius:999px;font-size:1rem}
+#dUpd .acts .ghost{background:var(--soft);color:var(--acc)}
+#dRst .acts .ghost{background:var(--soft);color:#ff3b30}
 .foot{color:var(--mut);font-size:.8rem;margin:8px 16px}
 :root[data-theme=light]{--bg:#f2f2f7;--ink:#000;--mut:#6c6c70;--card:#fff;--line:#e5e5ea;--soft:#ececf1;color-scheme:light}
 :root[data-theme=light] .toast{background:#1c1c1e;color:#fff}
@@ -126,7 +137,7 @@ nav button[aria-current=page]{color:var(--acc)}
 .cc::-webkit-color-swatch{border:2px solid rgba(255,255,255,.4);border-radius:50%}
 .cc::-moz-color-swatch{border:2px solid rgba(255,255,255,.4);border-radius:50%}
 @media(display-mode:standalone){html,body{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%}}
-@media(prefers-reduced-motion:reduce){.toast,.ind,nav button,.tg,.tg::after{transition:none}.tg.go::after{animation:none}}
+@media(prefers-reduced-motion:reduce){.toast,.ind,nav button,.tg,.tg::after{transition:none}.tg.go::after{animation:none}#dUpd[open],#dRst[open]{animation:none}}
 </style>
 </head>
 <body>
@@ -207,12 +218,12 @@ nav button[aria-current=page]{color:var(--acc)}
 </dialog>
 <dialog id="dRst">
 <h2>Einstellungen zurücksetzen?</h2>
-<p class="hint" style="margin:0 0 4px">Farbe, Dark Mode, Zoom und Benachrichtigungen gehen auf den Standard zurück. Die Geburtstagsliste bleibt erhalten.</p>
-<div class="acts"><button class="danger" id="rstYes" style="width:auto;flex:1">Zurücksetzen</button><button class="ghost" id="rstNo">Abbrechen</button></div>
+<p class="hint">Farbe, Dark Mode, Zoom und Benachrichtigungen gehen auf den Standard zurück. Die Geburtstagsliste bleibt erhalten.</p>
+<div class="acts"><button class="pri" id="rstNo">Abbrechen</button><button class="ghost" id="rstYes">Zurücksetzen</button></div>
 </dialog>
 <dialog id="dUpd">
 <h2>Neue Version verfügbar</h2>
-<p class="hint" style="margin:0 0 4px">Möchtest du jetzt aktualisieren? Die App startet dann mit der neuen Version neu. Deine Einstellungen und die Geburtstagsliste bleiben erhalten.</p>
+<p class="hint">Die App startet nach dem Update neu. Einstellungen und Geburtstagsliste bleiben erhalten.</p>
 <div class="acts"><button class="pri" id="updYes">Aktualisieren</button><button class="ghost" id="updNo">Später</button></div>
 </dialog>
 <dialog id="dZoom">
