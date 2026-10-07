@@ -87,6 +87,18 @@ nav button[aria-current=page]{color:var(--acc)}
 #vSet{display:flex;flex-direction:column;min-height:calc(100vh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));min-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}
 #vSet[hidden]{display:none}
 .ver{color:#66666d;font-size:.75rem;text-align:center;margin:auto 0 0;padding-top:40px;line-height:1.7}
+#vDoc{position:fixed;inset:0;background:var(--bg);z-index:30;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+#vDoc[hidden]{display:none}
+.dbar{position:sticky;top:0;z-index:1;padding:14px 16px 8px;background:linear-gradient(var(--bg) 70%,transparent)}
+#dClose{width:44px;height:44px;padding:0;border-radius:50%}
+.doc{max-width:560px;margin:0 auto;padding:4px 20px 70px}
+.doc h2{font-size:1.05rem;margin:24px 0 6px}
+.doc p,.doc li{color:#c9c9cf;font-size:.95rem;line-height:1.6;margin:6px 0}
+.doc ul{padding-left:20px}
+.doc a{color:var(--acc)}
+.stand{color:var(--mut);font-size:.8rem}
+.lnks{display:inline-block;margin-top:6px}
+.lnk{background:none;padding:0;border-radius:0;display:inline;font:inherit;font-weight:400;color:inherit;text-decoration:underline;cursor:pointer}
 .foot{color:var(--mut);font-size:.8rem;margin:8px 16px}
 @media(prefers-reduced-motion:reduce){.toast,.ind,nav button,.tg,.tg::after{transition:none}.tg.go::after{animation:none}}
 </style>
@@ -121,8 +133,12 @@ nav button[aria-current=page]{color:var(--acc)}
 <button class="tg" id="swN" role="switch" aria-checked="false" aria-label="Benachrichtigungen von Geburtstagen"></button></div>
 </div>
 <p class="foot">Du erhältst an jedem Geburtstag eine Nachricht über den Telegram-Bot.</p>
-<p class="ver"><span id="valVer"></span><br><span id="valUpd"></span></p>
+<p class="ver"><span id="valVer"></span><br><span id="valUpd"></span><br><span class="lnks"><button class="lnk" id="lnkP">Datenschutzerklärung</button> · <button class="lnk" id="lnkN">Nutzungsbedingungen</button></span></p>
 </main>
+<section id="vDoc" hidden role="dialog" aria-modal="true" aria-labelledby="dTitle">
+<div class="dbar"><button class="ghost" id="dClose" aria-label="Schließen"><svg class="i"><use href="#i-x"/></svg></button></div>
+<div class="doc"><h1 id="dTitle"></h1><div id="dBody"></div></div>
+</section>
 <nav aria-label="Hauptnavigation" data-t="home">
 <span class="ind" aria-hidden="true"></span>
 <button id="nHome" aria-current="page"><svg class="i"><use href="#i-cake"/></svg>Start</button>
@@ -303,6 +319,57 @@ async function loadDB(quiet){
   data=rows;save();$('#st').dataset.m='';render();stamp(r);if(!quiet)toast(rows.length+' Geburtstage aktualisiert')}
  catch(e){status('Keine Verbindung. Es werden gespeicherte Daten gezeigt.');if(!quiet)toast('Aktualisieren nicht möglich')}}
 $('#ref').onclick=()=>loadDB(false);
+
+const DOCS={
+p:{t:'Datenschutzerklärung',h:`<p class="stand">Stand: 7. Oktober 2026</p>
+<h2>1. Verantwortlicher</h2>
+<p>Philipp Dachtler<br>[Anschrift ergänzen]<br>E-Mail: <a href="mailto:philippdachtler01@gmail.com">philippdachtler01@gmail.com</a></p>
+<h2>2. Worum es geht</h2>
+<p>Der Jugendkalender zeigt die Geburtstage einer Jugendgruppe an, berechnet das Alter und hilft beim Gratulieren. Es gibt keine Registrierung, keine Werbung, kein Tracking und keine Analysedienste. Die App setzt selbst keine Cookies.</p>
+<h2>3. Welche Daten verarbeitet werden</h2>
+<p><b>a) Geburtstagsliste.</b> Name, Geburtsdatum, optional die Angabe „Schwester/Bruder“ (für die Anrede „Liebe/Lieber“) und optional ein Telegram-Benutzername. Die Daten stehen in einer Datei, die ich pflege. Diese Datei liegt auf dem Server der App und kann technisch von jedem abgerufen werden, der die Internetadresse kennt. Die Aufnahme in die Liste beruht auf deiner Einwilligung (Art. 6 Abs. 1 lit. a DSGVO), bei Minderjährigen auf der Einwilligung der Sorgeberechtigten. Du kannst die Einwilligung jederzeit widerrufen, dann wird dein Eintrag gelöscht.</p>
+<p><b>b) Daten auf deinem Gerät.</b> Die App speichert in deinem Browser eine Kopie der Liste, die Einstellung zu den Benachrichtigungen, den Zeitpunkt der letzten Aktualisierung und die App-Dateien für den Offline-Betrieb. Diese Daten bleiben auf deinem Gerät und werden nicht an mich übertragen. Du löschst sie, indem du die Browserdaten der Seite löschst oder die App entfernst. Grundlage ist § 25 Abs. 2 Nr. 2 TDDDG (technisch erforderlich) und Art. 6 Abs. 1 lit. f DSGVO.</p>
+<p><b>c) Glückwunschkarten.</b> Das Bild und der Text werden auf deinem Gerät erzeugt und nicht hochgeladen. Sie verlassen dein Gerät nur, wenn du sie selbst teilst.</p>
+<p><b>d) Hosting.</b> Beim Aufruf der App verarbeitet der Hosting-Anbieter technisch notwendige Daten (IP-Adresse, Zeitpunkt, abgerufene Datei, Browser und Gerätetyp). Die App wird bei Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, USA gehostet. Soweit Daten in die USA übermittelt werden, geschieht das auf Grundlage geeigneter Garantien nach Art. 44 ff. DSGVO. Interesse: sicherer und stabiler Betrieb (Art. 6 Abs. 1 lit. f DSGVO).</p>
+<p><b>e) Anzeige „Liste aktualisiert“.</b> Um zu zeigen, wann die Liste zuletzt geändert wurde, fragt die App bei GitHub (api.github.com, GitHub Inc./Microsoft) das Datum der letzten Änderung der Datei ab. GitHub erhält dabei deine IP-Adresse. Daten aus der Liste werden nicht übertragen.</p>
+<p><b>f) Telegram.</b> Die Funktion „Telegram“ öffnet die Telegram-App mit einer vorbereiteten Nachricht. Ab dort verarbeitet Telegram die Daten in eigener Verantwortung (siehe telegram.org/privacy). Ich erhalte keine Inhalte deiner Nachrichten. Sobald der Telegram-Bot für Geburtstags-Benachrichtigungen aktiv ist und du ihn abonnierst, speichert er deine Telegram-Chat-ID, um dir Nachrichten zu schicken. Beim Abmelden wird sie gelöscht. Grundlage ist deine Einwilligung (Art. 6 Abs. 1 lit. a DSGVO).</p>
+<h2>4. Keine Weitergabe</h2>
+<p>Ich verkaufe keine Daten und gebe sie nicht zu Werbezwecken weiter. Es findet keine automatisierte Entscheidungsfindung und kein Profiling statt. Schriftarten sind in der App eingebunden, es gibt keine Verbindung zu Google Fonts.</p>
+<h2>5. Speicherdauer</h2>
+<p>Einträge der Liste bleiben, bis du widerrufst oder aus der Gruppe ausscheidest. Server-Protokolle löscht der Hosting-Anbieter nach seinen Fristen. Lokale Daten bleiben, bis du sie löschst.</p>
+<h2>6. Minderjährige</h2>
+<p>Für Jugendliche unter 16 Jahren ist die Einwilligung der Sorgeberechtigten nötig. Sorgeberechtigte können jederzeit Auskunft, Berichtigung oder Löschung verlangen.</p>
+<h2>7. Deine Rechte</h2>
+<p>Du hast das Recht auf Auskunft (Art. 15), Berichtigung (Art. 16), Löschung (Art. 17), Einschränkung der Verarbeitung (Art. 18), Datenübertragbarkeit (Art. 20) und Widerspruch (Art. 21 DSGVO). Eine Einwilligung kannst du jederzeit mit Wirkung für die Zukunft widerrufen. Schreib dafür an philippdachtler01@gmail.com. Außerdem kannst du dich bei der zuständigen Datenschutz-Aufsichtsbehörde beschweren.</p>
+<h2>8. Sicherheit</h2>
+<p>Die Verbindung zur App ist per HTTPS verschlüsselt.</p>
+<h2>9. Änderungen</h2>
+<p>Ich passe diese Erklärung an, wenn sich die App oder die Rechtslage ändert. Es gilt die Fassung, die in der App angezeigt wird.</p>`},
+n:{t:'Nutzungsbedingungen',h:`<p class="stand">Stand: 7. Oktober 2026</p>
+<h2>1. Anbieter und Geltung</h2>
+<p>Anbieter der App ist Philipp Dachtler (Kontakt: <a href="mailto:philippdachtler01@gmail.com">philippdachtler01@gmail.com</a>). Die App ist kostenlos und für Mitglieder der Jugendgruppe gedacht, rein privat und nicht kommerziell. Mit der Nutzung akzeptierst du diese Bedingungen.</p>
+<h2>2. Leistung</h2>
+<p>Die App zeigt Geburtstage an, berechnet das Alter und bietet Vorlagen zum Gratulieren (Glückwunschkarte, Nachricht für Telegram). Optional gibt es Benachrichtigungen über einen Telegram-Bot. Ich gebe keine Gewähr für Richtigkeit, Vollständigkeit oder ständige Verfügbarkeit. Funktionen können geändert oder eingestellt werden.</p>
+<h2>3. Regeln für die Nutzung</h2>
+<ul><li>Nutze die App zum Gratulieren und für den Kontakt in der Gruppe.</li>
+<li>Gib Namen, Geburtsdaten und Telegram-Namen anderer nicht an Dritte weiter, veröffentliche sie nicht und lies sie nicht automatisiert aus.</li>
+<li>Nutze Kontaktdaten nicht für Werbung, Belästigung oder andere Zwecke, denen die Betroffenen nicht zugestimmt haben.</li>
+<li>Geh respektvoll miteinander um und verstoße nicht gegen geltendes Recht.</li></ul>
+<p>Bei Verstößen kann ich Einträge löschen oder die Nutzung beenden.</p>
+<h2>4. Inhalte Dritter</h2>
+<p>Die Bibelverse stammen aus der Lutherbibel von 1912 (gemeinfrei, Rechtschreibung angepasst). Die Schriften Great Vibes und Cormorant Garamond stehen unter der SIL Open Font License. Für Telegram gelten die Bedingungen von Telegram.</p>
+<h2>5. Haftung</h2>
+<p>Ich hafte unbeschränkt bei Vorsatz und grober Fahrlässigkeit, bei Verletzung von Leben, Körper oder Gesundheit und nach dem Produkthaftungsgesetz. Bei einfacher Fahrlässigkeit hafte ich nur bei Verletzung wesentlicher Vertragspflichten und beschränkt auf den vorhersehbaren, typischen Schaden. Für Inhalte und das Verhalten Dritter, etwa bei Telegram, hafte ich nicht.</p>
+<h2>6. Datenschutz</h2>
+<p>Wie ich Daten verarbeite, steht in der Datenschutzerklärung.</p>
+<h2>7. Änderungen</h2>
+<p>Ich kann diese Bedingungen ändern. Die jeweils aktuelle Fassung steht in der App. Bei wesentlichen Änderungen weise ich in der Gruppe darauf hin.</p>
+<h2>8. Schlussbestimmungen</h2>
+<p>Es gilt deutsches Recht. Zwingende Verbraucherschutzvorschriften bleiben unberührt. Sollte eine Regelung unwirksam sein, bleiben die übrigen wirksam.</p>`}};
+function openDoc(k){const d=DOCS[k];$('#dTitle').textContent=d.t;$('#dBody').innerHTML=d.h;const v=$('#vDoc');v.hidden=false;v.scrollTop=0;document.body.style.overflow='hidden';$('#dClose').focus()}
+function closeDoc(){$('#vDoc').hidden=true;document.body.style.overflow=''}
+$('#lnkP').onclick=()=>openDoc('p');$('#lnkN').onclick=()=>openDoc('n');$('#dClose').onclick=closeDoc;
+addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#vDoc').hidden)closeDoc()});
 
 /* Schalter: antippen oder halten und ziehen, wo man loslässt, gilt. Das Fenster kommt erst nach dem Loslassen auf "an". */
 let botOk=false;
