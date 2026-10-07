@@ -102,16 +102,16 @@ nav button[aria-current=page]{color:var(--acc)}
 .stand{color:var(--mut);font-size:.8rem}
 .lnks{display:inline-block;margin-top:6px}
 .lnk{background:none;padding:0;border-radius:0;display:inline;font:inherit;font-weight:400;color:inherit;text-decoration:underline;cursor:pointer}
-/* iOS-26-Hinweisfenster (Update, Zurücksetzen) */
-#dUpd,#dRst{width:min(calc(100vw - 48px),340px);padding:22px 16px 16px;border-radius:34px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
-#dUpd::backdrop,#dRst::backdrop{background:rgba(0,0,0,.3)}
-#dUpd[open],#dRst[open]{animation:alertIn .4s cubic-bezier(.34,1.3,.5,1)}
+/* iOS-26-Hinweisfenster (Update, Zurücksetzen, Telegram-Bot) */
+#dUpd,#dRst,#dBot{width:min(calc(100vw - 48px),340px);padding:22px 16px 16px;border-radius:34px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+#dUpd::backdrop,#dRst::backdrop,#dBot::backdrop{background:rgba(0,0,0,.3)}
+#dUpd[open],#dRst[open],#dBot[open]{animation:alertIn .4s cubic-bezier(.34,1.3,.5,1)}
 @keyframes alertIn{from{opacity:0;transform:scale(.9)}}
-#dUpd h2,#dRst h2{font-size:1.1rem;font-weight:700;margin:0 6px 6px}
-#dUpd .hint,#dRst .hint{margin:0 6px 20px;font-size:.95rem;color:var(--ink)}
-#dUpd .acts,#dRst .acts{flex-wrap:nowrap;gap:8px;margin-top:0}
-#dUpd .acts button,#dRst .acts button{flex:1;height:52px;padding:0 10px;border-radius:999px;font-size:1rem}
-#dUpd .acts .ghost{background:var(--soft);color:var(--acc)}
+#dUpd h2,#dRst h2,#dBot h2{font-size:1.1rem;font-weight:700;margin:0 6px 6px}
+#dUpd .hint,#dRst .hint,#dBot .hint{margin:0 6px 20px;font-size:.95rem;color:var(--ink)}
+#dUpd .acts,#dRst .acts,#dBot .acts{flex-wrap:nowrap;gap:8px;margin-top:0}
+#dUpd .acts button,#dRst .acts button,#dBot .acts button{flex:1;height:52px;padding:0 10px;border-radius:999px;font-size:1rem}
+#dUpd .acts .ghost,#dBot .acts .ghost{background:var(--soft);color:var(--acc)}
 #dRst .acts .ghost{background:var(--soft);color:#ff3b30}
 .foot{color:var(--mut);font-size:.8rem;margin:8px 16px}
 :root[data-theme=light]{--bg:#f2f2f7;--ink:#000;--mut:#6c6c70;--card:#fff;--line:#e5e5ea;--soft:#ececf1;color-scheme:light}
@@ -137,7 +137,7 @@ nav button[aria-current=page]{color:var(--acc)}
 .cc::-webkit-color-swatch{border:2px solid rgba(255,255,255,.4);border-radius:50%}
 .cc::-moz-color-swatch{border:2px solid rgba(255,255,255,.4);border-radius:50%}
 @media(display-mode:standalone){html,body{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%}}
-@media(prefers-reduced-motion:reduce){.toast,.ind,nav button,.tg,.tg::after{transition:none}.tg.go::after{animation:none}#dUpd[open],#dRst[open]{animation:none}}
+@media(prefers-reduced-motion:reduce){.toast,.ind,nav button,.tg,.tg::after{transition:none}.tg.go::after{animation:none}#dUpd[open],#dRst[open],#dBot[open]{animation:none}}
 </style>
 </head>
 <body>
@@ -213,8 +213,8 @@ nav button[aria-current=page]{color:var(--acc)}
 </dialog>
 <dialog id="dBot">
 <h2>Telegram-Bot abonnieren?</h2>
-<p class="hint" style="margin:0 0 4px">Du erhältst dann an jedem Geburtstag eine Nachricht per Telegram. Dafür öffnet sich der Bot in Telegram, dort tippst du auf „Start".</p>
-<div class="acts"><button class="pri" id="botYes">Ja, abonnieren</button><button class="ghost" id="botNo">Nein</button></div>
+<p class="hint">Du erhältst dann an jedem Geburtstag eine Nachricht per Telegram. Dafür öffnet sich der Bot in Telegram, dort tippst du auf „Start".</p>
+<div class="acts"><button class="ghost" id="botNo">Nein</button><button class="pri" id="botYes">Ja, abonnieren</button></div>
 </dialog>
 <dialog id="dRst">
 <h2>Einstellungen zurücksetzen?</h2>
