@@ -18,7 +18,6 @@ self.addEventListener('fetch', e => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
 
-  // Externe Anfragen (Supabase) nicht abfangen, damit keine Daten im Cache landen
   if (url.origin !== location.origin) return;
 
   // Geburtstagsdatei: erst Netz, offline letzter Stand
