@@ -77,12 +77,14 @@ nav button[aria-current=page]{color:var(--acc)}
 .tile{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;flex:none}
 .tile .i{width:19px;height:19px}
 .lbl{flex:1;min-width:0}.lbl b{display:block;font-weight:600}.lbl span{display:block;color:var(--mut);font-size:.8rem}
-.tg{width:51px;height:31px;border-radius:999px;background:#3a3a3e;padding:0;position:relative;flex:none;transition:background .25s}
-.tg::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.35);transition:transform .25s}
-.tg[aria-checked=true]{background:var(--acc)}.tg[aria-checked=true]::after{transform:translateX(20px)}
-.ver{color:var(--mut);font-size:.78rem;text-align:center;margin:48px 0 0;line-height:1.7}
+.tg{width:64px;height:30px;border-radius:999px;background:#2c2c2e;padding:0;position:relative;flex:none;overflow:visible;touch-action:pan-y;-webkit-tap-highlight-color:transparent;transition:background .3s}
+.tg::after{content:"";position:absolute;top:3px;left:3px;width:36px;height:24px;border-radius:999px;background:rgba(255,255,255,.3);box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 1px 3px rgba(0,0,0,.25);transform:translateX(var(--x,0px));transition:transform .4s cubic-bezier(.34,1.3,.5,1),scale .25s ease}
+.tg[aria-checked=true]{background:var(--acc);--x:22px}
+.tg.drag::after{transition:scale .2s ease;scale:1.3 1.45}
+.tg.go::after{animation:pop .45s ease-in-out}
+@keyframes pop{0%,100%{scale:1}40%{scale:1.3 1.45}}
 .foot{color:var(--mut);font-size:.8rem;margin:8px 16px}
-@media(prefers-reduced-motion:reduce){.toast,.ind,nav button,.tg,.tg::after{transition:none}}
+@media(prefers-reduced-motion:reduce){.toast,.ind,nav button,.tg,.tg::after{transition:none}.tg.go::after{animation:none}}
 </style>
 </head>
 <body>
@@ -298,13 +300,28 @@ async function loadDB(quiet){
  catch(e){status('Keine Verbindung. Es werden gespeicherte Daten gezeigt.');if(!quiet)toast('Aktualisieren nicht möglich')}}
 $('#ref').onclick=()=>loadDB(false);
 
-const setN=on=>{$('#swN').setAttribute('aria-checked',on);LS('jk_notif',on?'1':'0')};
-setN(LS('jk_notif')==='1');
-$('#swN').onclick=()=>{if($('#swN').getAttribute('aria-checked')==='true')setN(false);else $('#dBot').showModal()};
-$('#botNo').onclick=()=>$('#dBot').close();
-$('#botYes').onclick=()=>{$('#dBot').close();
- if(!TELEGRAM_BOT){toast('Der Bot ist noch nicht verknüpft');return}
- setN(true);window.open(`https://t.me/${TELEGRAM_BOT}?start=geburtstage`,'_blank','noopener')};
+/* Schalter: antippen oder halten und ziehen, wo man loslässt, gilt. Das Fenster kommt erst nach dem Loslassen auf "an". */
+let botOk=false;
+(()=>{const t=$('#swN');let st=null,moved=false,skip=false;
+ const cl=(v,a,b)=>Math.min(b,Math.max(a,v)),on=()=>t.getAttribute('aria-checked')==='true',saved=()=>LS('jk_notif')==='1';
+ const vis=v=>t.setAttribute('aria-checked',v);
+ const pop=()=>{t.classList.remove('go');void t.offsetWidth;t.classList.add('go');setTimeout(()=>t.classList.remove('go'),500)};
+ function settle(v,anim){if(anim)pop();vis(v);
+  if(v&&!saved())setTimeout(()=>{botOk=false;$('#dBot').showModal()},anim?420:350);
+  else if(!v&&saved())LS('jk_notif','0')}
+ vis(saved());
+ t.addEventListener('pointerdown',e=>{if(e.button>0)return;st={x:e.clientX,id:e.pointerId};moved=false});
+ t.addEventListener('pointermove',e=>{if(!st||e.pointerId!==st.id)return;
+  if(!moved){if(Math.abs(e.clientX-st.x)<4)return;moved=true;t.setPointerCapture(e.pointerId);t.classList.add('drag')}
+  const x=cl(e.clientX-t.getBoundingClientRect().left-21,0,22);t.style.setProperty('--x',x+'px');vis(x>11)});
+ const end=e=>{if(!st||e.pointerId!==st.id)return;st=null;if(!moved)return;skip=true;setTimeout(()=>skip=false,50);
+  t.classList.remove('drag');t.style.removeProperty('--x');settle(on(),false)};
+ t.addEventListener('pointerup',end);t.addEventListener('pointercancel',end);
+ t.addEventListener('click',()=>{if(skip){skip=false;return}settle(!on(),true)});
+ $('#dBot').addEventListener('close',()=>{if(!botOk){pop();vis(false)}});
+ $('#botNo').onclick=()=>$('#dBot').close();
+ $('#botYes').onclick=()=>{if(!TELEGRAM_BOT){toast('Der Bot ist noch nicht verknüpft');$('#dBot').close();return}
+  botOk=true;LS('jk_notif','1');$('#dBot').close();window.open(`https://t.me/${TELEGRAM_BOT}?start=geburtstage`,'_blank','noopener')}})();
 function show(v){$('#vHome').hidden=v!=='home';$('#vSet').hidden=v!=='set';
  $('#nHome').setAttribute('aria-current',v==='home'?'page':'false');$('#nSet').setAttribute('aria-current',v==='set'?'page':'false');$('nav').dataset.t=v;if(v==='set')showVer();scrollTo(0,0)}
 $('#nHome').onclick=()=>show('home');$('#nSet').onclick=()=>show('set');
