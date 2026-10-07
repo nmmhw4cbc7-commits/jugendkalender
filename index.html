@@ -86,7 +86,10 @@ nav button[aria-current=page]{color:var(--acc)}
 @keyframes pop{0%,100%{scale:1}40%{scale:1.3 1.45}}
 #vSet{display:flex;flex-direction:column;min-height:calc(100vh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));min-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}
 #vSet[hidden]{display:none}
-.ver{color:#66666d;font-size:.75rem;text-align:center;margin:auto 0 0;padding-top:40px;line-height:1.7}
+.ver{color:#66666d;font-size:.75rem;text-align:center;margin:0;padding-top:18px;line-height:1.7}
+.rst{margin-top:auto;padding-top:32px}
+.danger{background:#ff3b30;color:#fff;width:100%;padding:14px 16px}
+.upd{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));width:min(calc(100% - 32px),420px);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 12px 12px 18px;border-radius:22px;background:var(--card);color:var(--ink);box-shadow:0 8px 32px rgba(0,0,0,.4);border:1px solid var(--line);font-weight:600;z-index:8}
 #vDoc{position:fixed;inset:0;background:var(--bg);z-index:30;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 #vDoc[hidden]{display:none}
 .dbar{position:sticky;top:0;z-index:1;padding:14px 16px 8px;background:linear-gradient(var(--bg) 70%,transparent)}
@@ -173,6 +176,7 @@ nav button[aria-current=page]{color:var(--acc)}
 <span class="lbl"><b>Zoom</b><span>Größe der App</span></span>
 <span class="val" id="zVal">100 %</span><svg class="i chev" aria-hidden="true"><use href="#i-chev"/></svg></button>
 </div>
+<div class="rst"><button class="danger" id="bRst">Alle Einstellungen zurücksetzen</button></div>
 <p class="ver"><span id="valVer"></span><br><span id="valUpd"></span><br><span class="lnks"><button class="lnk" id="lnkP">Datenschutzerklärung</button> · <button class="lnk" id="lnkN">Nutzungsbedingungen</button></span></p>
 </main>
 <section id="vDoc" hidden role="dialog" aria-modal="true" aria-labelledby="dTitle">
@@ -201,6 +205,12 @@ nav button[aria-current=page]{color:var(--acc)}
 <p class="hint" style="margin:0 0 4px">Du erhältst dann an jedem Geburtstag eine Nachricht per Telegram. Dafür öffnet sich der Bot in Telegram, dort tippst du auf „Start".</p>
 <div class="acts"><button class="pri" id="botYes">Ja, abonnieren</button><button class="ghost" id="botNo">Nein</button></div>
 </dialog>
+<dialog id="dRst">
+<h2>Einstellungen zurücksetzen?</h2>
+<p class="hint" style="margin:0 0 4px">Farbe, Dark Mode, Zoom und Benachrichtigungen gehen auf den Standard zurück. Die Geburtstagsliste bleibt erhalten.</p>
+<div class="acts"><button class="danger" id="rstYes" style="width:auto;flex:1">Zurücksetzen</button><button class="ghost" id="rstNo">Abbrechen</button></div>
+</dialog>
+<div class="upd" id="upd" hidden role="status"><span>Neue Version verfügbar</span><button class="pri" id="updBtn">Neu laden</button></div>
 <dialog id="dZoom">
 <h2>Zoom</h2>
 <div class="zbig" id="zTxt" aria-live="polite">100 %</div>
@@ -509,7 +519,19 @@ $('#cAcc').addEventListener('input',e=>{LS('jk_acc',applyAcc(e.target.value))});
 showUpd();showVer();
 render();
 if(navigator.onLine)loadDB(true);
-if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+/* Alle Einstellungen zurücksetzen (Liste und Zeitstempel bleiben) */
+$('#bRst').onclick=()=>$('#dRst').showModal();
+$('#rstNo').onclick=()=>$('#dRst').close();
+$('#rstYes').onclick=()=>{['jk_acc','jk_dark','jk_zoom','jk_notif'].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});location.reload()};
+
+/* Update-Hinweis: Der Browser prüft sw.js selbst. Ändert sich die Datei (z. B. neue Cache-Nummer), übernimmt der neue Service Worker und die App zeigt den Hinweis. */
+if('serviceWorker' in navigator){
+ const had=!!navigator.serviceWorker.controller;
+ navigator.serviceWorker.addEventListener('controllerchange',()=>{if(had)$('#upd').hidden=false});
+ $('#updBtn').onclick=()=>location.reload();
+ addEventListener('load',()=>navigator.serviceWorker.register('sw.js').then(reg=>{
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)reg.update().catch(()=>{})})
+ }).catch(()=>{}))}
 </script>
 </body>
 </html>
