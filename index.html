@@ -40,7 +40,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px soli
 .t-name{font-weight:700;font-size:1.25rem}
 .hero .pri{background:#fff;color:#000;white-space:nowrap}
 .t-empty{font-size:1.15rem;font-weight:600}
-.sw{position:relative;margin-bottom:8px}
+.sw{position:relative;margin-bottom:14px}
 .sw .i{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--mut)}
 input[type=search]{width:100%;font:inherit;padding:15px 16px 15px 46px;border-radius:20px;border:0;background:var(--card);color:var(--ink)}
 h3{font-size:.8rem;margin:20px 6px 8px;color:var(--mut);font-weight:700;letter-spacing:.1em;text-transform:uppercase}
@@ -78,6 +78,7 @@ nav button[aria-current=page]{color:var(--acc)}
 .tg{width:51px;height:31px;border-radius:999px;background:#3a3a3e;padding:0;position:relative;flex:none;transition:background .25s}
 .tg::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.35);transition:transform .25s}
 .tg[aria-checked=true]{background:var(--acc)}.tg[aria-checked=true]::after{transform:translateX(20px)}
+.ver{color:var(--mut);font-size:.78rem;text-align:center;margin:48px 0 0;line-height:1.7}
 .foot{color:var(--mut);font-size:.8rem;margin:8px 16px}
 @media(prefers-reduced-motion:reduce){.toast,.ind,nav button,.tg,.tg::after{transition:none}}
 </style>
@@ -99,8 +100,8 @@ nav button[aria-current=page]{color:var(--acc)}
 <main id="vHome">
 <header><h1><svg class="i"><use href="#i-cake"/></svg>Jugendkalender</h1>
 <button class="ghost" id="ref" aria-label="Aktualisieren" title="Aktualisieren"><svg class="i"><use href="#i-refresh"/></svg></button></header>
-<section class="hero" id="today" aria-live="polite"></section>
 <div class="sw"><svg class="i"><use href="#i-search"/></svg><input type="search" id="q" placeholder="Name suchen" aria-label="Name suchen" autocomplete="off"></div>
+<section class="hero" id="today" aria-live="polite"></section>
 <div id="list"></div>
 <p class="hint" id="st" role="status"></p>
 </main>
@@ -112,6 +113,7 @@ nav button[aria-current=page]{color:var(--acc)}
 <button class="tg" id="swN" role="switch" aria-checked="false" aria-label="Benachrichtigungen von Geburtstagen"></button></div>
 </div>
 <p class="foot">Du erhältst an jedem Geburtstag eine Nachricht über den Telegram-Bot.</p>
+<p class="ver"><span id="valVer"></span><br><span id="valUpd"></span></p>
 </main>
 <nav aria-label="Hauptnavigation" data-t="home">
 <span class="ind" aria-hidden="true"></span>
@@ -143,6 +145,8 @@ const DATA_FILE="geburtstage.csv";
 const NAME_ORDER="nachname vorname";
 /* Benutzername deines Telegram-Bots ohne @ (z. B. "jugendkalender_bot"). Leer lassen, solange der Bot noch nicht existiert. */
 const TELEGRAM_BOT="";
+/* GitHub-Repo (Nutzer/Repo), um das Datum der letzten Änderung von geburtstage.csv zu lesen. Leer lassen, wenn nicht gewünscht. */
+const GH_REPO="nmmhw4cbc7-commits/jugendkalender";
 /* Bibelverse (Lutherbibel 1912, Rechtschreibung angepasst). Hier kannst du Verse ergänzen oder ändern. */
 const VERSES=[
 ["Dies ist der Tag, den der HERR macht; lasst uns freuen und fröhlich darin sein.","Psalm 118,24"],
@@ -274,13 +278,21 @@ function parse(t){t=fixEnc(t.replace(/^\uFEFF/,''));
   const tg=c.find(x=>/^(@\w{4,}|\+\d{6,})$/.test(x))||'',gc=c.find(x=>/^(schwester|bruder|weiblich|männlich)$/i.test(x))||'';
   const p=toP([c[ni],c[di],tg,/^(schwester|weiblich)$/i.test(gc)?'f':gc?'m':'']);if(p)out.push(p)}
  return out}
+async function stamp(r){let t=null,src='';
+ if(GH_REPO)try{const g=await fetch(`https://api.github.com/repos/${GH_REPO}/commits?path=${DATA_FILE}&per_page=1`);if(g.ok){const j=await g.json();t=j[0]&&j[0].commit.committer.date}}catch(e){}
+ if(!t){const h=r.headers.get('last-modified'),d=h&&new Date(h);if(d&&d.getFullYear()>2000)t=d.toISOString()}
+ if(!t){t=new Date().toISOString();src='abruf'}
+ LS('jk_upd',JSON.stringify({t,src}));showUpd()}
+function showUpd(){let o=null;try{o=JSON.parse(LS('jk_upd')||'null')}catch(e){}
+ $('#valUpd').textContent=o?(o.src?'Liste abgerufen: ':'Liste aktualisiert: ')+new Date(o.t).toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'}):'Liste noch nicht geladen'}
+async function showVer(){try{const k=(await caches.keys()).filter(x=>/^jugendkalender-v\d+$/.test(x)).sort((a,b)=>a.slice(16)-b.slice(16)).pop();$('#valVer').textContent=k?'Version '+k.slice(16):''}catch(e){$('#valVer').textContent=''}}
 function status(t){const e=$('#st');e.dataset.m=1;e.textContent=t}
 async function loadDB(quiet){
  try{const r=await fetch(DATA_FILE,{cache:'no-store'});
   if(!r.ok){status(`${DATA_FILE} nicht gefunden (Fehler ${r.status}). Es werden gespeicherte oder Beispieldaten gezeigt.`);if(!quiet)toast('Datei nicht gefunden');return}
   const txt=await r.text(),rows=parse(txt);
   if(!rows.length){status(`${DATA_FILE} gefunden, aber keine Zeile mit gültigem Datum (TT.MM.JJJJ). Erste Zeile: ${txt.split(/\r?\n/)[0].slice(0,80)}`);if(!quiet)toast('Keine gültigen Zeilen in der Datei');return}
-  data=rows;save();$('#st').dataset.m='';render();if(!quiet)toast(rows.length+' Geburtstage aktualisiert')}
+  data=rows;save();$('#st').dataset.m='';render();stamp(r);if(!quiet)toast(rows.length+' Geburtstage aktualisiert')}
  catch(e){status('Keine Verbindung. Es werden gespeicherte Daten gezeigt.');if(!quiet)toast('Aktualisieren nicht möglich')}}
 $('#ref').onclick=()=>loadDB(false);
 
@@ -292,9 +304,10 @@ $('#botYes').onclick=()=>{$('#dBot').close();
  if(!TELEGRAM_BOT){toast('Der Bot ist noch nicht verknüpft');return}
  setN(true);window.open(`https://t.me/${TELEGRAM_BOT}?start=geburtstage`,'_blank','noopener')};
 function show(v){$('#vHome').hidden=v!=='home';$('#vSet').hidden=v!=='set';
- $('#nHome').setAttribute('aria-current',v==='home'?'page':'false');$('#nSet').setAttribute('aria-current',v==='set'?'page':'false');$('nav').dataset.t=v;scrollTo(0,0)}
+ $('#nHome').setAttribute('aria-current',v==='home'?'page':'false');$('#nSet').setAttribute('aria-current',v==='set'?'page':'false');$('nav').dataset.t=v;if(v==='set')showVer();scrollTo(0,0)}
 $('#nHome').onclick=()=>show('home');$('#nSet').onclick=()=>show('set');
 
+showUpd();showVer();
 render();
 if(navigator.onLine)loadDB(true);
 if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
