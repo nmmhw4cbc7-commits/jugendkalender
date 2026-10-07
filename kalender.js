@@ -70,7 +70,7 @@ nav button{padding:9px 2px}
 .hr span{position:absolute;left:-44px;top:-8px;width:38px;text-align:right;font-size:.65rem;color:var(--mut)}
 .hcols{position:absolute;left:44px;right:0;top:0;bottom:0;display:grid;grid-template-columns:repeat(var(--n),1fr)}
 .hcols i{border-left:1px solid var(--line)}
-.now{position:absolute;left:44px;right:0;height:2px;margin-top:-1px;background:var(--acc)}
+.cnow{position:absolute;left:44px;right:0;height:2px;margin-top:-1px;background:var(--acc)}
 .nd{position:absolute;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:var(--acc)}
 #dEv{width:min(calc(100vw - 48px),340px);padding:22px 16px 16px;border-radius:34px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
 #dEv::backdrop{background:rgba(0,0,0,.3)}
@@ -116,7 +116,7 @@ function grid(cols,days){let h=`<div class="hg" id="hg"><div class="hin">`;
  for(let i=1;i<24;i++)h+=`<div class="hr" style="top:${i*HH}px"><span>${P(i)}:00</span></div>`;
  h+=`<div class="hcols" style="--n:${cols}">${'<i></i>'.repeat(cols)}</div>`;
  const t=new Date(),ix=days.findIndex(d=>same(d,t));
- if(ix>=0){const y=(t.getHours()+t.getMinutes()/60)*HH;h+=`<div class="now" style="top:${y}px"></div><i class="nd" style="top:${y}px;left:calc(44px + ${ix}*(100% - 44px)/${cols})"></i>`}
+ if(ix>=0){const y=(t.getHours()+t.getMinutes()/60)*HH;h+=`<div class="cnow" style="top:${y}px"></div><i class="nd" style="top:${y}px;left:calc(44px + ${ix}*(100% - 44px)/${cols})"></i>`}
  return h+'</div></div>'}
 function wHTML(){const s=mon(cur),days=[...Array(7)].map((_,i)=>addD(s,i));
  return '<div class="wk">'+strip(false)+'<div class="wa"><span class="gut">ganz-<br>tägig</span>'+days.map(d=>`<div class="wc" data-day="${iso(d)}">${evs(d).map(x=>chip(x,d)).join('')}</div>`).join('')+'</div>'+grid(7,days)+'</div>'}
