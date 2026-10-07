@@ -39,6 +39,8 @@ nav button{padding:9px 2px}
 .cind{position:absolute;top:3px;bottom:3px;left:3px;width:calc((100% - 6px)/3);border-radius:999px;background:var(--soft);transition:transform .35s cubic-bezier(.34,1.3,.5,1)}
 .cseg[data-o="1"] .cind{transform:translateX(100%)}
 .cseg[data-o="2"] .cind{transform:translateX(200%)}
+.cseg{touch-action:none;-webkit-user-select:none;user-select:none}
+.cind.drag{transition:none}
 #cBody{flex:1;min-height:0;display:flex;flex-direction:column}
 .mh{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:.7rem;font-weight:600;padding-bottom:6px;flex:none}
 .mh .we{color:var(--mut)}
@@ -89,7 +91,7 @@ document.head.appendChild(st);
 /* ---------- Markup ---------- */
 $('#vSet').insertAdjacentHTML('afterend',`<main id="vCal" hidden data-v="m">
 <div class="chd"><div class="ctt" id="cT"></div>
-<div class="cnv"><button id="cPrev" aria-label="Zurück"><svg class="i" style="transform:scaleX(-1)"><use href="#i-chev"/></svg></button><button id="cToday">Heute</button><button id="cNext" aria-label="Weiter"><svg class="i"><use href="#i-chev"/></svg></button></div></div>
+<div class="cnv"><button id="cPrev" aria-label="Zurück"><svg class="i" style="transform:scaleX(-1)"><use href="#i-chev"/></svg></button><button id="cNext" aria-label="Weiter"><svg class="i"><use href="#i-chev"/></svg></button></div></div>
 <div class="cseg" data-o="0" role="group" aria-label="Ansicht"><span class="cind" aria-hidden="true"></span><button data-v="m">Monat</button><button data-v="w">Woche</button><button data-v="d">Tag</button></div>
 <div id="cBody"></div></main>`);
 document.body.insertAdjacentHTML('beforeend',`<dialog id="dEv" aria-label="Geburtstag"><div id="evC"></div>
@@ -145,9 +147,22 @@ function setView(v){if(v===view)return;const t=today();
  if(view==='m'&&cur.getMonth()===t.getMonth()&&cur.getFullYear()===t.getFullYear())cur=t;
  view=v;renderCal(0)}
 $('#cPrev').onclick=()=>step(-1);$('#cNext').onclick=()=>step(1);
-$('#cToday').onclick=()=>{cur=today();renderCal(0)};
 vc.querySelectorAll('.cseg button').forEach(b=>b.onclick=()=>setView(b.dataset.v));
 addEventListener('resize',()=>{if(!vc.hidden&&view==='m')fit()});
+
+/* Markierung gedrückt halten und zwischen Monat, Woche und Tag ziehen, wo man loslässt, gilt */
+(()=>{const sg=$('.cseg'),ind=$('.cind'),bs=[...sg.querySelectorAll('button')],V=['m','w','d'];let s=null,moved=false;
+ const stp=()=>ind.offsetWidth,cl=(v,a,b)=>Math.min(b,Math.max(a,v));
+ sg.addEventListener('pointerdown',e=>{if(e.button>0)return;const r=ind.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right)return;
+  const b=V.indexOf(view)*stp();s={x:e.clientX,id:e.pointerId,base:b,tx:b};moved=false});
+ sg.addEventListener('pointermove',e=>{if(!s||e.pointerId!==s.id)return;const dx=e.clientX-s.x;
+  if(!moved){if(Math.abs(dx)<6)return;moved=true;sg.setPointerCapture(e.pointerId);ind.classList.add('drag')}
+  s.tx=cl(s.base+dx,0,2*stp());ind.style.transform=`translateX(${s.tx}px) scale(1.06)`;
+  const k=V[Math.round(s.tx/stp())];bs.forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===k))});
+ const end=e=>{if(!s||e.pointerId!==s.id)return;const was=moved,tx=s.tx;s=null;if(!was)return;
+  ind.classList.remove('drag');void ind.offsetWidth;const v=V[Math.round(tx/stp())];
+  if(v===view)renderCal(0);else setView(v);ind.style.transform=''};
+ sg.addEventListener('pointerup',end);sg.addEventListener('pointercancel',end)})();
 
 /* Wischen: links = weiter, rechts = zurück */
 let tp=null;
