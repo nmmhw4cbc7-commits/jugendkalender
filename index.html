@@ -102,7 +102,6 @@ nav button[aria-current=page]{color:var(--acc)}
 .stand{color:var(--mut);font-size:.8rem}
 .lnks{display:inline-block;margin-top:6px}
 .lnk{background:none;padding:0;border-radius:0;display:inline;font:inherit;font-weight:400;color:inherit;text-decoration:underline;cursor:pointer}
-/* iOS-26-Hinweisfenster (Update, Zurücksetzen, Telegram-Bot) */
 #dUpd,#dRst,#dBot{width:min(calc(100vw - 48px),340px);padding:22px 16px 16px;border-radius:34px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
 #dUpd::backdrop,#dRst::backdrop,#dBot::backdrop{background:rgba(0,0,0,.3)}
 #dUpd[open],#dRst[open],#dBot[open]{animation:alertIn .4s cubic-bezier(.34,1.3,.5,1)}
@@ -138,7 +137,6 @@ nav button[aria-current=page]{color:var(--acc)}
 .cc::-moz-color-swatch{border:2px solid rgba(0,0,0,.2);border-radius:50%}
 @media(display-mode:standalone){html,body{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%}}
 @media(prefers-reduced-motion:reduce){.toast,.ind,nav button,.tg,.tg::after{transition:none}.tg.go::after{animation:none}#dUpd[open],#dRst[open],#dBot[open]{animation:none}}
-/* ===== Einheitliche Pop-ups im iOS-26-Stil (Akzentfarbe und Dark Mode steuern alles) ===== */
 dialog{border:0;border-radius:34px;padding:22px 16px 16px;width:min(calc(100vw - 48px),340px);max-height:90vh;background:var(--card);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.35)}
 dialog::backdrop{background:rgba(0,0,0,.3)}
 dialog[open]{animation:alertIn .4s cubic-bezier(.34,1.3,.5,1)}
@@ -154,7 +152,6 @@ dialog .qrbox{width:min(100%,230px);margin:6px auto 14px}
 #dTut,#dLog{width:min(calc(100vw - 32px),420px)}
 #dShare .acts{flex-wrap:wrap}#dShare .acts button{flex:1 1 40%}#dShare #shClose{flex-basis:100%}
 @media(prefers-reduced-motion:reduce){dialog[open]{animation:none}}
-/* ===== Suchbutton neben der Navbar, verschmilzt beim Antippen zur Suchleiste ===== */
 :root{--sb:64px;--nh:76px}
 #dock{position:fixed;left:12px;right:12px;max-width:400px;margin:0 auto;height:var(--nh);bottom:calc(4px + env(safe-area-inset-bottom,0px) * .5);z-index:5;transition:bottom .25s ease-out}
 #dock.kbd{bottom:calc(8px + var(--kb,0px))}
@@ -178,7 +175,6 @@ dialog .qrbox{width:min(100%,230px);margin:6px auto 14px}
 :root[data-theme=dark] #dock.s #sBtn{background:transparent;border-color:transparent;box-shadow:none}
 :root[data-theme=dark] #sX{background:rgba(255,255,255,.16)}
 @media(prefers-reduced-motion:reduce){#dock,#dock nav,#dock nav button,#dock nav .ind,#sBtn,#sFld,#sX{transition:none!important}}
-/* ===== Einstellungen im iOS-Stil: große Überschrift, einzeilige Zeilen in Gruppen ===== */
 #vSet header{margin:6px 0 16px}
 #vSet h1{font-size:2.1rem;letter-spacing:-.03em}
 #vSet .set{min-height:48px;padding:6px 16px;gap:14px}
@@ -190,7 +186,6 @@ dialog .qrbox{width:min(100%,230px);margin:6px auto 14px}
 #vSet .grp+.grp,#vSet .foot+.grp{margin-top:26px}
 #vSet .foot{margin:8px 16px 0}
 
-/* ===== iOS-26 Press-Effekt für alle Pill-Buttons ===== */
 button.press{position:relative;isolation:isolate;overflow:hidden;
   transform:translateZ(0);will-change:transform;
   transition:transform .42s cubic-bezier(.34,1.56,.64,1),filter .25s ease,box-shadow .25s ease;
@@ -212,23 +207,20 @@ button.press.bounce{animation:pressBounce .42s cubic-bezier(.34,1.56,.64,1)}
   button.press::before{transition:none!important}
 }
 
-/* ===== Versteckter iOS-Switch für echtes Taptic-Engine-Feedback ===== */
 .haptic-src{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;
   opacity:0;cursor:pointer;z-index:5;appearance:none;-webkit-appearance:none;
-  border:0;background:transparent;border-radius:inherit}
+  border:0;background:transparent;border-radius:inherit;pointer-events:none}
+.haptic-src.live{pointer-events:auto}
 .haptic-wrap{position:relative}
 
-/* ===== Splash-Screen mit Logo-Animation ===== */
 #splash{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;
   background:#ffffff;transition:opacity .55s ease,visibility .55s ease;
   padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 #splash.hide{opacity:0;visibility:hidden;pointer-events:none}
 #splash svg{width:min(58vw,260px);height:auto;display:block}
-/* Startzustand: Personen weiter außen, leicht kleiner */
 #splash .p1{transform:translate(-42px,0) scale(.92);transform-origin:center}
 #splash .p2{transform:translate(42px,0) scale(.92);transform-origin:center}
 #splash .p1,#splash .p2{transition:transform 1.1s cubic-bezier(.34,1.2,.45,1)}
-/* Zielzustand: Personen überlappen leicht wie im Logo */
 #splash.merge .p1{transform:translate(-14px,0) scale(1)}
 #splash.merge .p2{transform:translate(14px,0) scale(1)}
 #splash .fade{opacity:0;transition:opacity .5s ease .3s}
@@ -243,17 +235,14 @@ button.press.bounce{animation:pressBounce .42s cubic-bezier(.34,1.56,.64,1)}
 </head>
 <body>
 
-<!-- Splash-Screen: erscheint sofort beim Öffnen, Personen fahren aufeinander zu -->
 <div id="splash" aria-hidden="true">
   <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
     <rect width="400" height="400" fill="#ffffff"/>
     <g class="fade">
-      <!-- Linke Person -->
       <g class="p1">
         <circle cx="140" cy="150" r="42" fill="#111"/>
         <path d="M60 300a80 80 0 0 1 160 0z" fill="#111"/>
       </g>
-      <!-- Rechte Person -->
       <g class="p2">
         <circle cx="260" cy="150" r="42" fill="#111"/>
         <path d="M180 300a80 80 0 0 1 160 0z" fill="#111"/>
@@ -273,8 +262,8 @@ button.press.bounce{animation:pressBounce .42s cubic-bezier(.34,1.56,.64,1)}
 <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5"/></symbol>
 <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 6h8M18 6h2M4 12h2M12 12h8M4 18h10M20 18h0"/><circle cx="15" cy="6" r="2.5"/><circle cx="9" cy="12" r="2.5"/><circle cx="17" cy="18" r="2.5"/></symbol>
 <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0"/></symbol>
-<symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 2-.9 2-2 0-.5-.2-1-.5-1.3-.3-.3-.5-.8-.5-1.2 0-1.1.9-2 2-2h2.3c2 0 3.700-1.600 3.700-3.600C21 6.500 17 3 12 3z"/><circle cx="7.500" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="15" cy="7" r="1"/></symbol>
-<symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.800A9 9 0 1 1 11.200 3a7 7 0 0 0 9.800 9.800z"/></symbol>
+<symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 2-.9 2-2 0-.5-.2-1-.5-1.3-.3-.3-.5-.8-.5-1.2 0-1.1.9-2 2-2h2.3c2 0 3.7-1.6 3.7-3.6C21 6.5 17 3 12 3z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="15" cy="7" r="1"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></symbol>
 <symbol id="i-zoom" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4M8 11h6M11 8v6"/></symbol>
 <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
 <symbol id="i-shuffle" viewBox="0 0 24 24"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></symbol>
@@ -360,13 +349,9 @@ button.press.bounce{animation:pressBounce .42s cubic-bezier(.34,1.56,.64,1)}
 
 <script>
 const DATA_FILE="geburtstage.csv";
-/* Reihenfolge der Namen in der Datei: "nachname vorname" (z. B. Nezlaw Bettina) oder "vorname nachname" */
 const NAME_ORDER="nachname vorname";
-/* Benutzername deines Telegram-Bots ohne @ (z. B. "jugendkalender_bot"). Leer lassen, solange der Bot noch nicht existiert. */
 const TELEGRAM_BOT="";
-/* GitHub-Repo (Nutzer/Repo), um das Datum der letzten Änderung von geburtstage.csv zu lesen. Leer lassen, wenn nicht gewünscht. */
 const GH_REPO="nmmhw4cbc7-commits/jugendkalender";
-/* Bibelverse (Lutherbibel 1912, Rechtschreibung angepasst). Hier kannst du Verse ergänzen oder ändern. */
 const VERSES=[
 ["Dies ist der Tag, den der HERR macht; lasst uns freuen und fröhlich darin sein.","Psalm 118,24"],
 ["Der HERR segne dich und behüte dich; der HERR lasse sein Angesicht leuchten über dir und sei dir gnädig; der HERR hebe sein Angesicht über dich und gebe dir Frieden.","4. Mose 6,24–26"],
@@ -390,24 +375,20 @@ const ic=n=>`<svg class="i" aria-hidden="true"><use href="#i-${n}"/></svg>`;
   const sp=$('#splash');if(!sp)return;
   const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
   const start=Date.now();
-  /* Erst nach zwei Frames + kleinem Delay, damit der Startzustand sicher gepaintet ist,
-     dann die merge-Klasse setzen und die Transition laufen lassen. */
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     setTimeout(()=>{sp.classList.add('merge')},reduce?0:120);
   }));
   const finish=()=>{sp.classList.add('hide');setTimeout(()=>sp.remove(),650)};
   addEventListener('load',()=>{const wait=Math.max(0,1800-(Date.now()-start));setTimeout(finish,wait)});
-  /* Fallback, falls 'load' nie feuert */
   setTimeout(finish,4000);
 })();
 
-/* ---------- Design (Akzentfarbe) ---------- */
+/* ---------- Design ---------- */
 const ACC_DEF='#e5263b';
 function applyAcc(c){if(!/^#[0-9a-f]{6}$/i.test(c||''))c=ACC_DEF;
  const r=parseInt(c.slice(1,3),16),g=parseInt(c.slice(3,5),16),b=parseInt(c.slice(5,7),16),light=(0.299*r+0.587*g+0.114*b)/255>0.6,s=document.documentElement.style;
  s.setProperty('--acc',c);s.setProperty('--on',light?'#000':'#fff');s.setProperty('--inv',light?'#fff':'#000');
  const i=$('#cAcc');if(i)i.value=c;return c}
-/* Standard: Light Mode. Dark Mode nur, wenn explizit auf "1" gesetzt. */
 function setDark(v){document.documentElement.dataset.theme=v?'dark':'light';
  const m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute('content',v?'#000000':'#f2f2f7')}
 const DEMO=[["Berger Mia","2008-10-06","@mia_b","f"],["Weber Jonas","2009-10-09","","m"],["Schmitt Lea","2007-10-21","@leas","f"],["Fischer Ben","2010-11-02","","m"],["Wolf Emma","2008-01-15","","f"],["Koch Paul","2009-03-30","","m"]];
@@ -432,7 +413,6 @@ function names(p){const w=p.n.split(/\s+/);if(w.length<2)return{fn:p.n,ln:''};
  return NAME_ORDER==='vorname nachname'?{fn:w[0],ln:w.slice(1).join(' ')}:{fn:w.slice(1).join(' '),ln:w[0]}}
 const gr=p=>p.g==='f'?'Liebe':p.g==='m'?'Lieber':'Liebe(r)';
 
-/* ---------- Karte (A4, schlicht) ---------- */
 let fontP;const fonts=()=>fontP||(fontP=Promise.all(['400 60px "Cormorant Garamond"','italic 400 60px "Cormorant Garamond"','600 60px "Cormorant Garamond"','400 60px "Great Vibes"'].map(f=>document.fonts.load(f,'Äöß„“')))).catch(()=>{});
 async function drawCard(p,age,vi){
  await fonts();
@@ -458,20 +438,17 @@ async function drawCard(p,age,vi){
  txt('– '+v[1].toUpperCase()+' –',`600 38px ${CG}`,GOLD,52,0,'5px');
  let y=(H-items.reduce((a,b)=>a+b.h,0))/2;items.forEach(i=>{i.f(y);y+=i.h});x.letterSpacing='0px';return cv}
 
-/* ---------- Liste ---------- */
 function render(){
  const all=data.map(p=>({p,...next(p)})).sort((a,b)=>a.days-b.days||a.p.n.localeCompare(b.p.n,'de'));
  const q=$('#q').value.trim().toLowerCase();
  const T=$('#today');
  T.hidden = !!q;
-
  if(!q){
   const td=all.filter(x=>x.days==0);
   if(!all.length)T.innerHTML='<div class="t-empty">Noch keine Daten. Tippe oben auf Aktualisieren.</div>';
   else if(td.length)T.innerHTML='<h2>Heute Geburtstag</h2>'+td.map(x=>`<div class="t-item"><div><div class="t-name">${esc(x.p.n)}</div><div class="t-age">${x.age}</div></div><button class="pri" data-g="${data.indexOf(x.p)}">${ic('gift')}Gratulieren</button></div>`).join('');
   else T.innerHTML='<div class="t-empty">Heute stehen keine Geburtstage an.</div>';
  }
-
  const toks=q.split(/\s+/).filter(Boolean);
  const items=q?all.filter(x=>{const n=x.p.n.toLowerCase();return toks.every(t=>n.includes(t))}).sort((a,b)=>a.p.n.localeCompare(b.p.n,'de')):all;
  let h=q&&!items.length?'<p class="hint">Keine Treffer.</p>':'',last=-1;
@@ -484,7 +461,6 @@ function render(){
 document.addEventListener('click',e=>{const b=e.target.closest('[data-g]');if(b)openG(+b.dataset.g)});
 $('#q').addEventListener('input',render);
 
-/* ---------- Gratulieren ---------- */
 let cur=null;
 const rnd=n=>Math.floor(Math.random()*n);
 function msg(){const p=cur.p,v=VERSES[cur.vi%VERSES.length];
@@ -507,7 +483,6 @@ $('#gImg').onclick=async()=>{const blob=await new Promise(async r=>(await drawCa
  try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],text:$('#gMsg').value});return}}catch(e){if(e.name==='AbortError')return}
  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=file.name;a.click();toast('Bild gespeichert')};
 
-/* ---------- Daten ---------- */
 function csv(t,dl){const out=[];let row=[],c='',q=false;
  for(let i=0;i<t.length;i++){const ch=t[i];
   if(q){if(ch=='"'){if(t[i+1]=='"'){c+='"';i++}else q=false}else c+=ch}
@@ -598,7 +573,6 @@ function closeDoc(){$('#vDoc').hidden=true;document.body.style.overflow=''}
 $('#lnkP').onclick=()=>openDoc('p');$('#lnkN').onclick=()=>openDoc('n');$('#dClose').onclick=closeDoc;
 addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#vDoc').hidden)closeDoc()});
 
-/* Schalter: antippen oder halten und ziehen, wo man loslässt, gilt. */
 let botOk=false;
 (()=>{const t=$('#swN');let st=null,moved=false,skip=false;
  const cl=(v,a,b)=>Math.min(b,Math.max(a,v)),on=()=>t.getAttribute('aria-checked')==='true',saved=()=>LS('jk_notif')==='1';
@@ -624,12 +598,15 @@ function show(v){$('#vHome').hidden=v!=='home';$('#vSet').hidden=v!=='set';
  $('#nHome').setAttribute('aria-current',v==='home'?'page':'false');$('#nSet').setAttribute('aria-current',v==='set'?'page':'false');$('nav').dataset.t=v;if(v==='set')showVer();scrollTo(0,0)}
 $('#nHome').onclick=()=>show('home');$('#nSet').onclick=()=>show('set');
 
-/* Markierung in der Leiste gedrückt halten und zwischen den Tabs ziehen */
+/* Navbar-Markierung: Startbereich = gesamte Navbar */
 (()=>{const nav=$('nav'),ind=$('.ind'),bs=[$('#nHome'),$('#nSet')];let st=null,moved=false;
  const max=()=>ind.offsetWidth+4,cl=(v,a,b)=>Math.min(b,Math.max(a,v));
- nav.addEventListener('pointerdown',e=>{if(e.button>0)return;const r=ind.getBoundingClientRect();
+ nav.addEventListener('pointerdown',e=>{
+  if(e.button>0)return;
+  const r=nav.getBoundingClientRect();
   if(e.clientX<r.left||e.clientX>r.right)return;
-  st={x:e.clientX,base:nav.dataset.t==='set'?max():0,id:e.pointerId,tx:nav.dataset.t==='set'?max():0};moved=false});
+  st={x:e.clientX,base:nav.dataset.t==='set'?max():0,id:e.pointerId,tx:nav.dataset.t==='set'?max():0};moved=false
+ });
  nav.addEventListener('pointermove',e=>{if(!st||e.pointerId!==st.id)return;const dx=e.clientX-st.x;
   if(!moved){if(Math.abs(dx)<6)return;moved=true;nav.setPointerCapture(e.pointerId);ind.classList.add('drag')}
   st.tx=cl(st.base+dx,0,max());ind.style.transform=`translateX(${st.tx}px) scale(1.07)`;
@@ -639,7 +616,6 @@ $('#nHome').onclick=()=>show('home');$('#nSet').onclick=()=>show('set');
   show(tx>max()/2?'set':'home');ind.style.transform=''};
  nav.addEventListener('pointerup',end);nav.addEventListener('pointercancel',end)})();
 
-/* Zoom komplett sperren, wenn die App installiert ist (Doppeltippen und Pinch) */
 (()=>{const inst=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;if(!inst)return;
  $('#vp').setAttribute('content','width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover');
  ['gesturestart','gesturechange','gestureend'].forEach(n=>document.addEventListener(n,e=>e.preventDefault()));
@@ -647,7 +623,6 @@ $('#nHome').onclick=()=>show('home');$('#nSet').onclick=()=>show('set');
  let lt=0;document.addEventListener('touchend',e=>{const n=Date.now();if(n-lt<350&&!e.target.closest('input,textarea'))e.preventDefault();lt=n},{passive:false});
  document.addEventListener('dblclick',e=>e.preventDefault())})();
 
-/* Dark Mode: Standard ist aus (Light Mode). Nur wenn jk_dark === '1', wird Dark Mode aktiviert. */
 (()=>{const t=$('#swD');let st=null,moved=false,skip=false;
  const cl=(v,a,b)=>Math.min(b,Math.max(a,v)),on=()=>t.getAttribute('aria-checked')==='true';
  const vis=v=>t.setAttribute('aria-checked',v);
@@ -662,10 +637,10 @@ $('#nHome').onclick=()=>show('home');$('#nSet').onclick=()=>show('set');
   t.classList.remove('drag');t.style.removeProperty('--x');settle(on(),false)};
  t.addEventListener('pointerup',end);t.addEventListener('pointercancel',end);
  t.addEventListener('click',()=>{if(skip){skip=false;return}settle(!on(),true)})})();
-/* Zoom: 100 % ist Standard */
+
 function setZoom(p,keep){p=Math.round(Math.min(150,Math.max(70,+p||100))/5)*5;
  document.documentElement.style.zoom=p===100?'':String(p/100);
- $('#zVal').textContent=p+' %';$('#zTxt').textContent=p+' \%';$('#zRange').value=p;
+ $('#zVal').textContent=p+' %';$('#zTxt').textContent=p+' %';$('#zRange').value=p;
  if(!keep)LS('jk_zoom',String(p));return p}
 $('#rZoom').onclick=()=>$('#dZoom').showModal();
 $('#zRange').addEventListener('input',e=>setZoom(e.target.value));
@@ -680,12 +655,10 @@ $('#cAcc').addEventListener('input',e=>{LS('jk_acc',applyAcc(e.target.value))});
 showUpd();showVer();
 render();
 if(navigator.onLine)loadDB(true);
-/* Alle Einstellungen zurücksetzen (Liste und Zeitstempel bleiben) */
 $('#bRst').onclick=()=>$('#dRst').showModal();
 $('#rstNo').onclick=()=>$('#dRst').close();
 $('#rstYes').onclick=()=>{['jk_acc','jk_dark','jk_zoom','jk_notif'].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});location.reload()};
 
-/* Update-Frage */
 if('serviceWorker' in navigator){
  let wantReload=false,waiting=null;
  const ask=w=>{waiting=w;if(!$('#dUpd').open)$('#dUpd').showModal()};
@@ -698,7 +671,7 @@ if('serviceWorker' in navigator){
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)reg.update().catch(()=>{})})
  }).catch(()=>{}))}
 
-/* ===== iOS-26 Press-Effekt ===== */
+/* ===== Press-Effekt ===== */
 (()=>{
  const PILL='button:not(.rowbtn):not(.chip):not(.ev):not(.dh):not(.wd):not(.dn):not(.more):not(.lnk):not(.cc)';
  function down(el){if(!el||el.dataset.press)return;el.dataset.press='1';
@@ -731,9 +704,10 @@ if('serviceWorker' in navigator){
  });
 })();
 
-/* ===== Echtes haptisches Feedback ===== */
+/* ===== Haptik (iOS-Switch nur 120 ms aktiv, blockiert Drag nicht) ===== */
 (()=>{
   const PILL='button:not(.rowbtn):not(.chip):not(.ev):not(.dh):not(.wd):not(.dn):not(.more):not(.lnk):not(.cc)';
+  const NO_SW='nav, .cseg, .seg, .ind, #dock';
   let iosHaptic=false;
   try{
     const t=document.createElement('input');
@@ -741,9 +715,7 @@ if('serviceWorker' in navigator){
     iosHaptic='switch' in t;
   }catch(e){}
 
-  function vibrate(ms){
-    if(!iosHaptic&&navigator.vibrate){try{navigator.vibrate(ms)}catch(e){}}
-  }
+  function vibrate(ms){if(navigator.vibrate){try{navigator.vibrate(ms)}catch(e){}}}
 
   function attach(el){
     if(el.dataset.haptic)return;el.dataset.haptic='1';
@@ -766,26 +738,36 @@ if('serviceWorker' in navigator){
   }
 
   function scan(root){
-    (root||document).querySelectorAll(PILL).forEach(attach);
+    (root||document).querySelectorAll(PILL).forEach(el=>{
+      if(el.closest(NO_SW))return;
+      attach(el);
+    });
   }
   scan();
   const mo=new MutationObserver(muts=>{
     for(const m of muts)for(const n of m.addedNodes){
       if(n.nodeType!==1)continue;
-      if(n.matches&&n.matches(PILL))attach(n);
+      if(n.matches&&n.matches(PILL)&&!n.closest(NO_SW))attach(n);
       if(n.querySelectorAll)scan(n);
     }
   });
   mo.observe(document.body,{childList:true,subtree:true});
 
   document.addEventListener('pointerdown',e=>{
+    if(e.button!==undefined&&e.button>0)return;
     const el=e.target.closest(PILL);
-    if(el&&!iosHaptic)vibrate(8);
+    if(el&&!el.closest(NO_SW)){
+      const sw=el.querySelector('.haptic-src');
+      if(sw&&iosHaptic){
+        sw.classList.add('live');
+        setTimeout(()=>sw.classList.remove('live'),120);
+      }
+      vibrate(8);
+    }
   },{passive:true});
 })();
 </script>
 <script>
-/* Zusatz-Abschnitte für die Einstellungen: Home-Bildschirm, App teilen, Kalender-Import. */
 (()=>{
 const HOST='jugendkalendar.com',LINK='https://'+HOST;
 const QR='<svg viewBox="0 0 37 37" shape-rendering="crispEdges" role="img" aria-label="QR-Code zur App"><path fill="#000" d="M2 2h7v1h-7zM12 2h1v1h-1zM14 2h5v1h-5zM21 2h1v1h-1zM23 2h1v1h-1zM25 2h2v1h-2zM28 2h7v1h-7zM2 3h1v1h-1zM8 3h1v1h-1zM10 3h2v1h-2zM14 3h1v1h-1zM18 3h1v1h-1zM22 3h2v1h-2zM26 3h1v1h-1zM28 3h1v1h-1zM34 3h1v1h-1zM2 4h1v1h-1zM4 4h3v1h-3zM8 4h1v1h-1zM15 4h6v1h-6zM22 4h2v1h-2zM28 4h1v1h-1zM30 4h3v1h-3zM34 4h1v1h-1zM2 5h1v1h-1zM4 5h3v1h-3zM8 5h1v1h-1zM11 5h3v1h-3zM17 5h4v1h-4zM22 5h1v1h-1zM28 5h1v1h-1zM30 5h3v1h-3zM34 5h1v1h-1zM2 6h1v1h-1zM4 6h3v1h-3zM8 6h1v1h-1zM12 6h6v1h-6zM20 6h1v1h-1zM22 6h1v1h-1zM28 6h1v1h-1zM30 6h3v1h-3zM34 6h1v1h-1zM2 7h1v1h-1zM8 7h1v1h-1zM10 7h3v1h-3zM17 7h1v1h-1zM20 7h4v1h-4zM25 7h2v1h-2zM28 7h1v1h-1zM34 7h1v1h-1zM2 8h7v1h-7zM10 8h1v1h-1zM12 8h1v1h-1zM14 8h1v1h-1zM16 8h1v1h-1zM18 8h1v1h-1zM20 8h1v1h-1zM22 8h1v1h-1zM24 8h1v1h-1zM26 8h1v1h-1zM28 8h7v1h-7zM10 9h1v1h-1zM13 9h3v1h-3zM21 9h3v1h-3zM26 9h1v1h-1zM6 10h4v1h-4zM11 10h1v1h-1zM13 10h3v1h-3zM17 10h1v1h-1zM19 10h2v1h-2zM22 10h5v1h-5zM28 10h2v1h-2zM33 10h1v1h-1zM2 11h2v1h-2zM6 11h2v1h-2zM9 11h4v1h-4zM14 11h1v1h-1zM16 11h1v1h-1zM18 11h5v1h-5zM25 11h1v1h-1zM29 11h1v1h-1zM31 11h2v1h-2zM3 12h1v1h-1zM5 12h1v1h-1zM7 12h5v1h-5zM25 12h1v1h-1zM27 12h1v1h-1zM29 12h2v1h-2zM33 12h1v1h-1zM2 13h2v1h-2zM5 13h2v1h-2zM9 13h1v1h-1zM11 13h1v1h-1zM26 13h2v1h-2zM30 13h1v1h-1zM34 13h1v1h-1zM2 14h3v1h-3zM8 14h1v1h-1zM10 14h1v1h-1zM25 14h2v1h-2zM28 14h2v1h-2zM33 14h1v1h-1zM2 15h1v1h-1zM7 15h1v1h-1zM25 15h1v1h-1zM27 15h1v1h-1zM32 15h2v1h-2zM2 16h7v1h-7zM10 16h2v1h-2zM25 16h1v1h-1zM30 16h2v1h-2zM33 16h1v1h-1zM2 17h4v1h-4zM7 17h1v1h-1zM9 17h3v1h-3zM25 17h3v1h-3zM29 17h3v1h-3zM34 17h1v1h-1zM2 18h1v1h-1zM4 18h6v1h-6zM28 18h1v1h-1zM30 18h1v1h-1zM32 18h2v1h-2zM6 19h1v1h-1zM9 19h2v1h-2zM25 19h2v1h-2zM29 19h1v1h-1zM33 19h2v1h-2zM2 20h2v1h-2zM5 20h4v1h-4zM10 20h2v1h-2zM25 20h7v1h-7zM5 21h2v1h-2zM9 21h1v1h-1zM11 21h1v1h-1zM28 21h1v1h-1zM30 21h1v1h-1zM33 21h1v1h-1zM3 22h1v1h-1zM5 22h1v1h-1zM7 22h5v1h-5zM30 22h2v1h-2zM2 23h3v1h-3zM9 23h1v1h-1zM26 23h4v1h-4zM31 23h3v1h-3zM4 24h1v1h-1zM7 24h2v1h-2zM11 24h1v1h-1zM25 24h2v1h-2zM33 24h1v1h-1zM4 25h1v1h-1zM7 25h1v1h-1zM9 25h2v1h-2zM15 25h1v1h-1zM17 25h1v1h-1zM23 25h1v1h-1zM25 25h1v1h-1zM30 25h1v1h-1zM2 26h8v1h-8zM13 26h2v1h-2zM16 26h1v1h-1zM19 26h2v1h-2zM22 26h3v1h-3zM26 26h5v1h-5zM10 27h1v1h-1zM13 27h3v1h-3zM19 27h5v1h-5zM26 27h1v1h-1zM30 27h2v1h-2zM33 27h1v1h-1zM2 28h7v1h-7zM10 28h1v1h-1zM13 28h1v1h-1zM16 28h1v1h-1zM19 28h2v1h-2zM22 28h1v1h-1zM26 28h1v1h-1zM28 28h1v1h-1zM30 28h4v1h-4zM2 29h1v1h-1zM8 29h1v1h-1zM10 29h2v1h-2zM15 29h1v1h-1zM17 29h3v1h-3zM21 29h1v1h-1zM24 29h3v1h-3zM30 29h1v1h-1zM33 29h2v1h-2zM2 30h1v1h-1zM4 30h3v1h-3zM8 30h1v1h-1zM10 30h2v1h-2zM13 30h1v1h-1zM17 30h2v1h-2zM20 30h1v1h-1zM22 30h1v1h-1zM24 30h1v1h-1zM26 30h5v1h-5zM2 31h1v1h-1zM4 31h3v1h-3zM8 31h1v1h-1zM12 31h1v1h-1zM14 31h2v1h-2zM17 31h3v1h-3zM22 31h2v1h-2zM28 31h4v1h-4zM34 31h1v1h-1zM2 32h1v1h-1zM4 32h3v1h-3zM8 32h1v1h-1zM12 32h1v1h-1zM17 32h1v1h-1zM19 32h1v1h-1zM21 32h2v1h-2zM25 32h1v1h-1zM27 32h2v1h-2zM30 32h3v1h-3zM2 33h1v1h-1zM8 33h1v1h-1zM11 33h1v1h-1zM15 33h3v1h-3zM20 33h3v1h-3zM24 33h7v1h-7zM32 33h1v1h-1zM2 34h7v1h-7zM12 34h3v1h-3zM16 34h1v1h-1zM21 34h2v1h-2zM24 34h4v1h-4zM29 34h1v1h-1zM32 34h1v1h-1zM34 34h1v1h-1z"/><rect x="12" y="12" width="13" height="13" rx="2.4" fill="#fff"/><clipPath id="qrc"><rect x="13.0" y="13.0" width="11" height="11" rx="2.4"/></clipPath><image href="icons/icon-192.png" x="13.0" y="13.0" width="11" height="11" clip-path="url(#qrc)" preserveAspectRatio="xMidYMid slice" shape-rendering="auto"/></svg>';
@@ -875,7 +857,6 @@ async function getIcs(){if(!data.length){toast('Keine Geburtstage geladen');retu
 </script>
 <script src="kalender.js"></script>
 <script>
-/* Suche */
 (()=>{const dock=$('#dock'),q=$('#q'),vv=window.visualViewport;let open=false;
  function kb(){const h=vv&&open?Math.max(0,Math.round(innerHeight-vv.height-vv.offsetTop)):0;
   dock.style.setProperty('--kb',h+'px');dock.classList.toggle('kbd',h>60)}
