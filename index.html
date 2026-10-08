@@ -189,6 +189,34 @@ dialog .qrbox{width:min(100%,230px);margin:6px auto 14px}
 #vSet .set+.set::before{left:60px}
 #vSet .grp+.grp,#vSet .foot+.grp{margin-top:26px}
 #vSet .foot{margin:8px 16px 0}
+
+/* ===== iOS-26 Press-Effekt für alle Pill-Buttons ===== */
+/* Scale Down + Liquid Glass + Spring Bounce + Haptik */
+button.press{position:relative;isolation:isolate;overflow:hidden;
+  transform:translateZ(0);will-change:transform;
+  transition:transform .42s cubic-bezier(.34,1.56,.64,1),filter .25s ease,box-shadow .25s ease;
+  touch-action:manipulation;-webkit-user-select:none;user-select:none}
+/* Liquid-Glass-Overlay: dunkler/heller Schleier, der beim Drücken erscheint */
+button.press::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:rgba(255,255,255,0);opacity:0;
+  transition:opacity .28s ease,background .28s ease;z-index:-1}
+button.press.pressing{transform:scale(.955);transition:transform .12s cubic-bezier(.4,0,.2,1)}
+button.press.pressing::before{opacity:1;background:rgba(0,0,0,.18)}
+:root[data-theme=light] button.press.pressing::before{background:rgba(0,0,0,.08)}
+/* Bounce nach dem Loslassen */
+button.press.bounce{animation:pressBounce .42s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pressBounce{
+  0%{transform:scale(.955)}
+  55%{transform:scale(1.018)}
+  100%{transform:scale(1)}
+}
+/* Pill-Erkennung: nur abgerundete Buttons bekommen den Effekt.
+   Rechteckige Zeilen-Buttons (.rowbtn) und Tages-Zellen bleiben unangetastet. */
+button:not(.rowbtn):not(.chip):not(.ev):not(.dh):not(.wd):not(.dn):not(.more):not(.lnk):not(.cc){}
+@media(prefers-reduced-motion:reduce){
+  button.press,button.press.pressing{transition:none!important;transform:none!important;animation:none!important}
+  button.press::before{transition:none!important}
+}
 </style>
 </head>
 <body>
@@ -611,6 +639,52 @@ if('serviceWorker' in navigator){
   reg.addEventListener('updatefound',()=>{const w=reg.installing;if(w)w.addEventListener('statechange',()=>{if(w.state==='installed'&&navigator.serviceWorker.controller)ask(w)})});
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)reg.update().catch(()=>{})})
  }).catch(()=>{}))}
+
+/* ===== iOS-26 Press-Effekt: Scale Down + Liquid Glass + Spring Bounce + Haptik =====
+   Global per Event-Delegation. Erfasst alle Pill-Buttons (border-radius:999px):
+   .pri .ghost .danger .tg nav button .cseg button .cnv button .seg button
+   #dEv .acts button #dLog .acts button #dGrat .acts button #dTut .acts button #dShare .acts button
+   Ausgenommen: .rowbtn (Zeilen), .chip/.ev (Kalender), .wd/.dh (Tagesspalten), .lnk (Links), .cc (Farbwähler) */
+(()=>{
+ const PILL='button:not(.rowbtn):not(.chip):not(.ev):not(.dh):not(.wd):not(.dn):not(.more):not(.lnk):not(.cc)';
+ let lastVib=0;
+ function vib(ms){const n=Date.now();if(n-lastVib<60)return;lastVib=n;
+  try{if(navigator.vibrate)navigator.vibrate(ms)}catch(e){}
+  /* iOS: kein navigator.vibrate – kurzer Trick über einen leeren Link-Klick löst
+     auf iPhones mit Taptic Engine ein leichtes haptisches Feedback aus (iOS 17.4+). */
+  if(/iPhone|iPad|iPod/.test(navigator.userAgent)&&!navigator.vibrate){
+   try{const a=document.createElement('a');a.href='#';a.style.display='none';document.body.appendChild(a);a.click();a.remove()}catch(e){}}}
+ function down(el){if(!el||el.dataset.press)return;el.dataset.press='1';
+  el.classList.add('press','pressing');vib(8)}
+ function up(el){if(!el||!el.dataset.press)return;delete el.dataset.press;
+  el.classList.remove('pressing');
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches){el.classList.remove('press');return}
+  el.classList.add('bounce');
+  const done=()=>{el.classList.remove('bounce','press');el.removeEventListener('animationend',done)};
+  el.addEventListener('animationend',done);
+  setTimeout(done,500)}
+ document.addEventListener('pointerdown',e=>{
+  if(e.button!==undefined&&e.button>0)return;
+  const el=e.target.closest(PILL);if(!el)return;down(el);
+ },{passive:true});
+ document.addEventListener('pointerup',e=>{
+  const el=e.target.closest(PILL);
+  document.querySelectorAll('.press.pressing').forEach(b=>{if(b!==el)up(b)});
+  up(el);
+ },{passive:true});
+ document.addEventListener('pointercancel',()=>{
+  document.querySelectorAll('.press.pressing').forEach(up);
+ },{passive:true});
+ /* Falls der Finger aus dem Button gezogen wird, ohne loszulassen: visuell zurücksetzen */
+ document.addEventListener('pointerleave',e=>{
+  const el=e.target.closest&&e.target.closest(PILL);
+  if(el&&el.dataset.press)up(el);
+ },true);
+ /* Dialoge: Buttons beim Öffnen frisch initialisieren, damit kein „hängender“ Zustand bleibt */
+ document.querySelectorAll('dialog').forEach(d=>{
+  d.addEventListener('close',()=>d.querySelectorAll('.press').forEach(b=>{b.classList.remove('press','pressing','bounce');delete b.dataset.press}));
+ });
+})();
 </script>
 <script>
 /* Zusatz-Abschnitte für die Einstellungen: Home-Bildschirm, App teilen, Kalender-Import. */
