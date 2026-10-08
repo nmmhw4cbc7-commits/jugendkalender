@@ -1,6 +1,6 @@
 /* Kalenderansicht im Apple-Kalender-Stil. Wird nach dem Haupt-Script geladen und baut den dritten Tab ein. */
 (()=>{
-const WK=['M','D','M','D','F','S','S'],WS=['Mo','Di','Mi','Do','Fr','Sa','So'],COL={f:'#ff375f',m:'#0a84ff',x:'#30d158'},HH=48;
+const WK=['M','D','M','D','F','S','S'],WS=['Mo','Di','Mi','Do','Fr','Sa','So'],COL={f:'#ff375f',m:'#0a84ff'};
 const P=n=>String(n).padStart(2,'0'),iso=d=>d.getFullYear()+'-'+P(d.getMonth()+1)+'-'+P(d.getDate());
 const fromIso=s=>{const a=s.split('-');return new Date(+a[0],a[1]-1,+a[2])};
 const addD=(d,n)=>new Date(d.getFullYear(),d.getMonth(),d.getDate()+n);
@@ -10,12 +10,14 @@ const today=()=>{const t=new Date();t.setHours(0,0,0,0);return t};
 const same=(a,b)=>iso(a)===iso(b);
 const sm=m=>MN[m].length>4?MN[m].slice(0,3)+'.':MN[m];
 const full=p=>{const n=names(p);return(n.fn+' '+n.ln).trim()};
+/* Es gibt nur weiblich (f) und männlich (m): alles, was nicht weiblich ist, gilt als männlich */
+const gen=p=>p.g==='f'?'f':'m';
 let view='m',cur=today(),ci=-1;
 
 /* Geburtstage eines Tages (29.2. wird in Nicht-Schaltjahren auf den 28.2. gelegt) */
 function evs(d){const y=d.getFullYear(),m=d.getMonth()+1,dd=d.getDate(),o=[];
  data.forEach((p,i)=>{if(p.m!==m)return;const hit=p.d===dd||(p.m===2&&p.d===29&&dd===28&&!leap(y));
-  if(hit&&y-p.y>=1)o.push({p,i,age:y-p.y,c:COL[p.g==='f'||p.g==='m'?p.g:'x']})});
+  if(hit&&y-p.y>=1)o.push({p,i,age:y-p.y,c:COL[gen(p)]})});
  return o.sort((a,b)=>a.p.n.localeCompare(b.p.n,'de'))}
 
 /* ---------- Styles ---------- */
@@ -56,24 +58,18 @@ nav button{padding:9px 2px}
 .more{flex:none;font-size:.62rem;color:var(--mut);text-align:center;line-height:14px}
 .wk,.dv{flex:1;min-height:0;display:flex;flex-direction:column}
 .wh{display:flex;flex:none;padding-bottom:4px}
-.gut{width:44px;flex:none;font-size:.58rem;color:var(--mut);display:flex;align-items:center;justify-content:flex-end;padding-right:6px;line-height:1.1;text-align:right}
 .wd{flex:1;min-width:0;background:none;color:var(--ink);flex-direction:column;gap:4px;padding:4px 0;border-radius:12px;font-weight:400}
 .wd small{font-size:.7rem;font-weight:600;color:var(--mut)}
-.wa{display:flex;flex:none;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:4px 0;max-height:30vh;overflow:auto}
-.wc{flex:1;min-width:0;padding:0 1px;display:flex;flex-direction:column;gap:2px;border-left:1px solid var(--line)}
-.dh{font-weight:700;padding:8px 6px 6px;flex:none}
-.da{display:flex;flex-direction:column;gap:6px;padding:0 4px 8px;flex:none;max-height:34vh;overflow:auto}
+.lst{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 4px}
+.dsec{margin-bottom:14px}
+.dh{display:block;width:100%;text-align:left;background:none;color:var(--ink);border-radius:0;padding:8px 2px 6px;font-weight:700;font-size:1rem;border-bottom:1px solid var(--line);margin-bottom:8px}
+.dh.td{color:var(--acc)}
+.dh.we{color:var(--mut)}
+.dh.we.td{color:var(--acc)}
+.dsec .ev{margin-bottom:6px}
 .ev{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;text-align:left;padding:9px 12px;border-radius:12px;border-left:4px solid var(--c);background:color-mix(in srgb,var(--c) 22%,transparent);color:color-mix(in srgb,var(--c) 70%,var(--ink));font-weight:700}
 .ev span{font-weight:500;font-size:.8rem}
-.none{color:var(--mut);margin:2px 8px;font-size:.9rem}
-.hg{flex:1;min-height:0;overflow-y:auto;position:relative;-webkit-overflow-scrolling:touch}
-.hin{position:relative;height:${24*HH}px}
-.hr{position:absolute;left:44px;right:0;height:0;border-top:1px solid var(--line)}
-.hr span{position:absolute;left:-44px;top:-8px;width:38px;text-align:right;font-size:.65rem;color:var(--mut)}
-.hcols{position:absolute;left:44px;right:0;top:0;bottom:0;display:grid;grid-template-columns:repeat(var(--n),1fr)}
-.hcols i{border-left:1px solid var(--line)}
-.cnow{position:absolute;left:44px;right:0;height:2px;margin-top:-1px;background:var(--acc)}
-.nd{position:absolute;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:var(--acc)}
+.none{color:var(--mut);margin:2px 2px 4px;font-size:.9rem}
 #dEv{width:min(calc(100vw - 48px),340px);padding:22px 16px 16px;border-radius:34px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
 #dEv::backdrop{background:rgba(0,0,0,.3)}
 #dEv[open]{animation:alertIn .4s cubic-bezier(.34,1.3,.5,1)}
@@ -111,19 +107,20 @@ function mHTML(){const f=new Date(cur.getFullYear(),cur.getMonth(),1),start=mon(
    h+=`<div class="mc${k>4?' we':''}" data-day="${iso(d)}">${dnum(d,t)}<div class="ce">${evs(d).map(x=>chip(x,d)).join('')}</div></div>`}
   h+='</div>'}
  return h+'</div>'}
-function strip(sel){const s=mon(cur),t=today();let h='<div class="wh"><span class="gut"></span>';
- for(let i=0;i<7;i++){const d=addD(s,i);h+=`<button class="wd${i>4?' we':''}" data-day="${iso(d)}"><small>${WS[i]}</small>${dnum(d,t,sel)}</button>`}
+/* Wochenstreifen (nur in der Tagesansicht, zum schnellen Wechseln des Tages) */
+function strip(){const s=mon(cur),t=today();let h='<div class="wh">';
+ for(let i=0;i<7;i++){const d=addD(s,i);h+=`<button class="wd${i>4?' we':''}" data-day="${iso(d)}"><small>${WS[i]}</small>${dnum(d,t,true)}</button>`}
  return h+'</div>'}
-function grid(cols,days){let h=`<div class="hg" id="hg"><div class="hin">`;
- for(let i=1;i<24;i++)h+=`<div class="hr" style="top:${i*HH}px"><span>${P(i)}:00</span></div>`;
- h+=`<div class="hcols" style="--n:${cols}">${'<i></i>'.repeat(cols)}</div>`;
- const t=new Date(),ix=days.findIndex(d=>same(d,t));
- if(ix>=0){const y=(t.getHours()+t.getMinutes()/60)*HH;h+=`<div class="cnow" style="top:${y}px"></div><i class="nd" style="top:${y}px;left:calc(44px + ${ix}*(100% - 44px)/${cols})"></i>`}
+/* Woche: einfache Liste Montag bis Sonntag, darunter jeweils die Geburtstage */
+function wHTML(){const s=mon(cur),t=today();let h='<div class="wk"><div class="lst">';
+ for(let i=0;i<7;i++){const d=addD(s,i),e=evs(d);
+  h+=`<div class="dsec"><button class="dh${i>4?' we':''}${same(d,t)?' td':''}" data-day="${iso(d)}">${WDL[d.getDay()]}, ${d.getDate()}. ${MN[d.getMonth()]}</button>`
+   +(e.length?e.map(x=>evb(x,d)).join(''):'<p class="none">Keine Geburtstage</p>')+'</div>'}
  return h+'</div></div>'}
-function wHTML(){const s=mon(cur),days=[...Array(7)].map((_,i)=>addD(s,i));
- return '<div class="wk">'+strip(false)+'<div class="wa"><span class="gut">ganz-<br>tägig</span>'+days.map(d=>`<div class="wc" data-day="${iso(d)}">${evs(d).map(x=>chip(x,d)).join('')}</div>`).join('')+'</div>'+grid(7,days)+'</div>'}
+/* Tag: nur die Geburtstage des Tages, keine Uhrzeiten */
 function dHTML(){const e=evs(cur);
- return '<div class="dv">'+strip(true)+`<div class="dh">${WDL[cur.getDay()]}, ${cur.getDate()}. ${MN[cur.getMonth()]} ${cur.getFullYear()}</div><div class="da">`+(e.length?e.map(x=>evb(x,cur)).join(''):'<p class="none">Keine Geburtstage</p>')+'</div>'+grid(1,[cur])+'</div>'}
+ return '<div class="dv">'+strip()+`<div class="lst"><div class="dsec"><div class="dh${same(cur,today())?' td':''}">${WDL[cur.getDay()]}, ${cur.getDate()}. ${MN[cur.getMonth()]} ${cur.getFullYear()}</div>`
+  +(e.length?e.map(x=>evb(x,cur)).join(''):'<p class="none">Keine Geburtstage</p>')+'</div></div></div>'}
 
 /* Passt so viele Chips in die Zelle, wie Platz ist, Rest als "+n" */
 function fit(){cb.querySelectorAll('.ce').forEach(ce=>{ce.querySelectorAll('.more').forEach(m=>m.remove());
@@ -137,9 +134,7 @@ function renderCal(dir){
  const[t,y]=titles();$('#cT').innerHTML=esc(t)+'<small>'+y+'</small>';
  vc.dataset.v=view;$('.cseg').dataset.o='mwd'.indexOf(view);
  vc.querySelectorAll('.cseg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===view));
- const o=$('#hg'),keep=o?o.scrollTop:null;
  cb.innerHTML=view==='m'?mHTML():view==='w'?wHTML():dHTML();
- const hg=$('#hg');if(hg)hg.scrollTop=keep!=null?keep:7*HH;
  if(view==='m')fit();
  if(dir&&!matchMedia('(prefers-reduced-motion: reduce)').matches&&cb.animate)cb.animate([{opacity:0,transform:`translateX(${dir*28}px)`},{opacity:1,transform:'none'}],{duration:260,easing:'ease-out'})}
 function step(n){cur=view==='m'?addM(cur,n):addD(cur,n*(view==='w'?7:1));renderCal(n)}
@@ -174,7 +169,7 @@ cb.addEventListener('touchend',e=>{if(!tp)return;const t=e.changedTouches[0],dx=
 cb.addEventListener('click',e=>{const c=e.target.closest('[data-e]');if(c){openEv(+c.dataset.e,c.dataset.dt);return}
  const d=e.target.closest('[data-day]');if(d){cur=fromIso(d.dataset.day);view='d';renderCal(0)}});
 function openEv(i,dt){const p=data[i];if(!p)return;ci=i;const d=fromIso(dt),age=d.getFullYear()-p.y,t=today(),
-  c=COL[p.g==='f'||p.g==='m'?p.g:'x'],verb=d<t?'wurde':same(d,t)?'wird heute':'wird';
+  c=COL[gen(p)],verb=d<t?'wurde':same(d,t)?'wird heute':'wird';
  $('#evC').innerHTML=`<div class="eh"><span class="ed" style="background:${c}"></span><div><div class="en">${esc(full(p))}</div><div class="es">Geburtstag · ${WDL[d.getDay()]}, ${d.getDate()}. ${MN[d.getMonth()]} ${d.getFullYear()}</div></div></div>
 <div class="er"><span>Geburtsdatum</span><b>${p.d}. ${MN[p.m-1]} ${p.y}</b></div>
 <div class="er"><span>Alter</span><b>${verb} ${age}</b></div>`;
