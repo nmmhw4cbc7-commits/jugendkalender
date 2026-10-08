@@ -267,6 +267,7 @@ button.press.bounce{animation:pressBounce .42s cubic-bezier(.34,1.56,.64,1)}
 <symbol id="i-zoom" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4M8 11h6M11 8v6"/></symbol>
 <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
 <symbol id="i-shuffle" viewBox="0 0 24 24"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
 </svg>
 <main id="vHome">
 <header><h1><svg class="i"><use href="#i-cake"/></svg>Jugendkalender</h1>
@@ -599,22 +600,53 @@ function show(v){$('#vHome').hidden=v!=='home';$('#vSet').hidden=v!=='set';
 $('#nHome').onclick=()=>show('home');$('#nSet').onclick=()=>show('set');
 
 /* ============================================================
-   NAVBAR: Original-Zustand – Drag startet nur, wenn der Finger
-   auf der Markierung liegt. Genau wie vorher.
+   NAVBAR-DRAG: startet nur auf der Markierung und gleitet
+   dynamisch über 2 oder 3 Tabs – je nachdem, was gerade
+   in der Navbar steht. Der Kalender-Tab wird von kalender.js
+   nachträglich eingehängt und ist hier automatisch dabei.
    ============================================================ */
-(()=>{const nav=$('nav'),ind=$('.ind'),bs=[$('#nHome'),$('#nSet')];let st=null,moved=false;
- const max=()=>ind.offsetWidth+4,cl=(v,a,b)=>Math.min(b,Math.max(a,v));
- nav.addEventListener('pointerdown',e=>{if(e.button>0)return;const r=ind.getBoundingClientRect();
-  if(e.clientX<r.left||e.clientX>r.right)return;
-  st={x:e.clientX,base:nav.dataset.t==='set'?max():0,id:e.pointerId,tx:nav.dataset.t==='set'?max():0};moved=false});
- nav.addEventListener('pointermove',e=>{if(!st||e.pointerId!==st.id)return;const dx=e.clientX-st.x;
-  if(!moved){if(Math.abs(dx)<6)return;moved=true;nav.setPointerCapture(e.pointerId);ind.classList.add('drag')}
-  st.tx=cl(st.base+dx,0,max());ind.style.transform=`translateX(${st.tx}px) scale(1.07)`;
-  const on=st.tx>max()/2?'nSet':'nHome';bs.forEach(b=>b.setAttribute('aria-current',b.id===on?'page':'false'))});
- const end=e=>{if(!st||e.pointerId!==st.id)return;const was=moved,tx=st.tx;st=null;if(!was)return;
-  ind.classList.remove('drag');void ind.offsetWidth;
-  show(tx>max()/2?'set':'home');ind.style.transform=''};
- nav.addEventListener('pointerup',end);nav.addEventListener('pointercancel',end)})();
+(()=>{
+  const nav=$('nav');
+  const ind=()=>nav.querySelector('.ind');
+  let st=null,moved=false;
+  const btns=()=>[...nav.querySelectorAll('button')];
+  const step=()=>ind().offsetWidth+4;
+  const cl=(v,a,b)=>Math.min(b,Math.max(a,v));
+  const key=b=>b.id.replace(/^n/,'').toLowerCase();      /* nHome→home, nCal→cal, nSet→set */
+
+  nav.addEventListener('pointerdown',e=>{
+    if(e.button>0)return;
+    const r=ind().getBoundingClientRect();
+    if(e.clientX<r.left||e.clientX>r.right)return;
+    const list=btns();
+    const cur=nav.dataset.t||'home';
+    const idx=Math.max(0,list.findIndex(b=>key(b)===cur));
+    st={x:e.clientX,base:idx*step(),id:e.pointerId,tx:idx*step()};
+    moved=false;
+  });
+
+  nav.addEventListener('pointermove',e=>{
+    if(!st||e.pointerId!==st.id)return;
+    const dx=e.clientX-st.x;
+    if(!moved){if(Math.abs(dx)<6)return;moved=true;nav.setPointerCapture(e.pointerId);ind().classList.add('drag')}
+    const list=btns(),max=(list.length-1)*step();
+    st.tx=cl(st.base+dx,0,max);
+    ind().style.transform=`translateX(${st.tx}px) scale(1.07)`;
+    const k=list[Math.round(st.tx/step())];
+    list.forEach(b=>b.setAttribute('aria-current',b===k?'page':'false'));
+  });
+
+  const end=e=>{
+    if(!st||e.pointerId!==st.id)return;
+    const was=moved,tx=st.tx;st=null;if(!was)return;
+    ind().classList.remove('drag');void ind().offsetWidth;
+    const list=btns(),k=list[Math.round(tx/step())];
+    if(typeof window.show==='function'&&k)window.show(key(k));
+    ind().style.transform='';
+  };
+  nav.addEventListener('pointerup',end);
+  nav.addEventListener('pointercancel',end);
+})();
 
 (()=>{const inst=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;if(!inst)return;
  $('#vp').setAttribute('content','width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover');
@@ -673,7 +705,7 @@ if('serviceWorker' in navigator){
 
 /* ===== Press-Effekt ===== */
 (()=>{
- const PILL='button:not(.rowbtn):not(.chip):not(.ev):not(.dh):not(.wd):not(.dn):not(.more):not(.lnk):not(.cc):not(#nHome):not(#nSet)';
+ const PILL='button:not(.rowbtn):not(.chip):not(.ev):not(.dh):not(.wd):not(.dn):not(.more):not(.lnk):not(.cc):not(#nHome):not(#nCal):not(#nSet)';
  function down(el){if(!el||el.dataset.press)return;el.dataset.press='1';
   el.classList.add('press','pressing')}
  function up(el){if(!el||!el.dataset.press)return;delete el.dataset.press;
@@ -706,7 +738,7 @@ if('serviceWorker' in navigator){
 
 /* ===== Haptik (überall außer Navbar) ===== */
 (()=>{
-  const PILL='button:not(.rowbtn):not(.chip):not(.ev):not(.dh):not(.wd):not(.dn):not(.more):not(.lnk):not(.cc):not(#nHome):not(#nSet)';
+  const PILL='button:not(.rowbtn):not(.chip):not(.ev):not(.dh):not(.wd):not(.dn):not(.more):not(.lnk):not(.cc):not(#nHome):not(#nCal):not(#nSet)';
   let iosHaptic=false;
   try{
     const t=document.createElement('input');
