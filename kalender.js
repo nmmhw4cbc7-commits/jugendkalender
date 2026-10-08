@@ -35,14 +35,14 @@ nav button{padding:9px 2px}
 .cnv{display:flex;align-items:center;background:var(--card);border-radius:999px;padding:3px;flex:none}
 .cnv button{background:none;color:var(--acc);padding:8px 10px;border-radius:999px;font-weight:600}
 .cnv .i{width:20px;height:20px}
-.cseg{position:relative;display:flex;background:var(--card);border-radius:999px;padding:3px;margin:0 6px 10px;flex:none}
+.cseg{position:relative;display:flex;background:var(--card);border-radius:999px;padding:3px;margin:0 6px 10px;flex:none;touch-action:none;-webkit-user-select:none;user-select:none}
 .cseg button{flex:1;position:relative;z-index:1;background:none;color:var(--mut);padding:7px 0;border-radius:999px;font-size:.9rem;transition:color .25s}
 .cseg button[aria-pressed=true]{color:var(--ink)}
-.cind{position:absolute;top:3px;bottom:3px;left:3px;width:calc((100% - 6px)/3);border-radius:999px;background:var(--soft);transition:transform .35s cubic-bezier(.34,1.3,.5,1)}
+.cind{position:absolute;top:3px;bottom:3px;left:3px;width:calc((100% - 6px)/3);border-radius:999px;background:var(--soft);pointer-events:none;transition:transform .4s cubic-bezier(.34,1.3,.5,1)}
 .cseg[data-o="1"] .cind{transform:translateX(100%)}
 .cseg[data-o="2"] .cind{transform:translateX(200%)}
-.cseg{touch-action:none;-webkit-user-select:none;user-select:none}
-.cind.drag{transition:none}
+.cind.drag{transition:none;background:rgba(0,0,0,.14)}
+:root[data-theme=dark] .cind.drag{background:rgba(255,255,255,.25)}
 #cBody{flex:1;min-height:0;display:flex;flex-direction:column}
 .mh{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:.7rem;font-weight:600;padding-bottom:6px;flex:none}
 .mh .we{color:var(--mut)}
@@ -146,19 +146,55 @@ $('#cPrev').onclick=()=>step(-1);$('#cNext').onclick=()=>step(1);
 vc.querySelectorAll('.cseg button').forEach(b=>b.onclick=()=>setView(b.dataset.v));
 addEventListener('resize',()=>{if(!vc.hidden&&view==='m')fit()});
 
-/* Markierung gedrückt halten und zwischen Monat, Woche und Tag ziehen, wo man loslässt, gilt */
-(()=>{const sg=$('.cseg'),ind=$('.cind'),bs=[...sg.querySelectorAll('button')],V=['m','w','d'];let s=null,moved=false;
- const stp=()=>ind.offsetWidth,cl=(v,a,b)=>Math.min(b,Math.max(a,v));
- sg.addEventListener('pointerdown',e=>{if(e.button>0)return;const r=ind.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right)return;
-  const b=V.indexOf(view)*stp();s={x:e.clientX,id:e.pointerId,base:b,tx:b};moved=false});
- sg.addEventListener('pointermove',e=>{if(!s||e.pointerId!==s.id)return;const dx=e.clientX-s.x;
-  if(!moved){if(Math.abs(dx)<6)return;moved=true;sg.setPointerCapture(e.pointerId);ind.classList.add('drag')}
-  s.tx=cl(s.base+dx,0,2*stp());ind.style.transform=`translateX(${s.tx}px) scale(1.06)`;
-  const k=V[Math.round(s.tx/stp())];bs.forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===k))});
- const end=e=>{if(!s||e.pointerId!==s.id)return;const was=moved,tx=s.tx;s=null;if(!was)return;
-  ind.classList.remove('drag');void ind.offsetWidth;const v=V[Math.round(tx/stp())];
-  if(v===view)renderCal(0);else setView(v);ind.style.transform=''};
- sg.addEventListener('pointerup',end);sg.addEventListener('pointercancel',end)})();
+/* Markierung gedrückt halten und zwischen Monat, Woche und Tag ziehen.
+   Verhält sich exakt wie die Navbar: scale(1.07) beim Ziehen,
+   gleitende Rückkehr beim Loslassen, Tab-Wechsel erst danach. */
+(()=>{
+  const sg=$('.cseg'),ind=$('.cind'),
+        bs=[...sg.querySelectorAll('button')],V=['m','w','d'];
+  let s=null,moved=false;
+  const stp=()=>ind.offsetWidth,
+        cl=(v,a,b)=>Math.min(b,Math.max(a,v));
+
+  sg.addEventListener('pointerdown',e=>{
+    if(e.button>0)return;
+    const r=ind.getBoundingClientRect();
+    if(e.clientX<r.left||e.clientX>r.right)return;
+    const b=V.indexOf(view)*stp();
+    s={x:e.clientX,id:e.pointerId,base:b,tx:b};
+    moved=false;
+  });
+
+  sg.addEventListener('pointermove',e=>{
+    if(!s||e.pointerId!==s.id)return;
+    const dx=e.clientX-s.x;
+    if(!moved){
+      if(Math.abs(dx)<6)return;
+      moved=true;
+      sg.setPointerCapture(e.pointerId);
+      ind.classList.add('drag');
+    }
+    s.tx=cl(s.base+dx,0,2*stp());
+    ind.style.transform=`translateX(${s.tx}px) scale(1.07)`;
+    const k=V[Math.round(s.tx/stp())];
+    bs.forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===k));
+  });
+
+  const end=e=>{
+    if(!s||e.pointerId!==s.id)return;
+    const was=moved,tx=s.tx;s=null;
+    if(!was)return;
+    /* transition erst nach dem Loslassen wieder aktivieren,
+       damit die Markierung sauber einrastet (genau wie in der Navbar) */
+    ind.classList.remove('drag');
+    void ind.offsetWidth;
+    const v=V[Math.round(tx/stp())];
+    if(v===view)renderCal(0);else setView(v);
+    ind.style.transform='';
+  };
+  sg.addEventListener('pointerup',end);
+  sg.addEventListener('pointercancel',end);
+})();
 
 /* Wischen: Der Inhalt folgt dem Finger. Weit genug oder schnell genug gezogen = nächster/voriger Zeitraum, sonst springt er zurück. */
 (()=>{let s=null,lock=null,w=1,busy=false,block=0;
