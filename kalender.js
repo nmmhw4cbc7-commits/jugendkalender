@@ -244,3 +244,32 @@ document.head.appendChild(css);
 const BOT='jugendkalender_bot';
 $('#botYes').onclick=()=>{botOk=true;LS('jk_notif','1');$('#dBot').close();window.open('https://t.me/'+BOT+'?start=geburtstage','_blank','noopener')};
 })();
+
+/* Versionsverlauf: liest changelog.json (neueste Version zuerst) und zeigt sie in den Einstellungen */
+(()=>{
+const css=document.createElement('style');
+css.textContent=`#dLog{width:min(calc(100vw - 32px),420px);padding:22px 16px 16px;border-radius:34px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+#dLog::backdrop{background:rgba(0,0,0,.3)}
+#dLog[open]{animation:alertIn .4s cubic-bezier(.34,1.3,.5,1)}
+#dLog h2{margin:0 6px 12px;font-size:1.1rem;font-weight:700}
+#logC{max-height:min(60vh,480px);overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 6px}
+.lv+.lv{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+.lvh{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.lvh span{color:var(--mut);font-size:.8rem;white-space:nowrap}
+.lv ul{margin:6px 0 0;padding-left:20px}
+.lv li{font-size:.95rem;line-height:1.5;margin:4px 0}
+#dLog .acts{margin-top:14px}
+#dLog .acts button{flex:1;height:52px;padding:0 10px;border-radius:999px;font-size:1rem}`;
+document.head.appendChild(css);
+document.body.insertAdjacentHTML('beforeend',`<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol></svg>
+<dialog id="dLog" aria-labelledby="logT"><h2 id="logT">Versionsverlauf</h2><div id="logC"></div><div class="acts"><button class="pri" id="logX">Schließen</button></div></dialog>`);
+$('#vSet .rst').insertAdjacentHTML('beforebegin',`<div class="grp"><button class="set rowbtn" id="rLog"><span class="tile" style="background:var(--acc);color:var(--on)"><svg class="i"><use href="#i-list"/></svg></span><span class="lbl"><b>Versionsverlauf</b><span>Was in jedem Update neu ist</span></span><svg class="i chev" aria-hidden="true"><use href="#i-chev"/></svg></button></div>`);
+let loaded=false;
+const fmt=s=>{const a=s.split('-'),d=new Date(+a[0],a[1]-1,+a[2]);return isNaN(d)?s:d.toLocaleDateString('de-DE',{day:'numeric',month:'long',year:'numeric'})};
+async function load(){const c=$('#logC');
+ try{const r=await fetch('changelog.json');if(!r.ok)throw 0;const j=await r.json();if(!Array.isArray(j)||!j.length)throw 0;
+  c.innerHTML=j.map(e=>`<div class="lv"><div class="lvh"><b>Version ${esc(String(e.v))}</b><span>${esc(fmt(String(e.d||'')))}</span></div><ul>${(e.n||[]).map(t=>`<li>${esc(String(t))}</li>`).join('')}</ul></div>`).join('');loaded=true}
+ catch(e){c.innerHTML='<p class="hint">Der Verlauf konnte nicht geladen werden. Prüfe deine Verbindung und versuch es später noch einmal.</p>'}}
+$('#rLog').onclick=()=>{$('#dLog').showModal();if(!loaded){$('#logC').innerHTML='<p class="hint">Lädt …</p>';load()}};
+$('#logX').onclick=()=>$('#dLog').close();
+})();
