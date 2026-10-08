@@ -201,25 +201,38 @@ function openEv(i,dt){const p=data[i];if(!p)return;ci=i;const d=fromIso(dt),age=
 $('#evX').onclick=()=>$('#dEv').close();
 $('#evG').onclick=()=>{const i=ci;$('#dEv').close();openG(i)};
 
-/* ---------- Navigation mit drei Tabs ---------- */
-const old=$('nav'),nav=old.cloneNode(false);
-nav.innerHTML='<span class="ind" aria-hidden="true"></span><button id="nHome" aria-current="page">'+ic('cake')+'Start</button><button id="nCal" aria-current="false">'+ic('cal')+'Kalender</button><button id="nSet" aria-current="false">'+ic('sliders')+'Einstellungen</button>';
-old.replaceWith(nav);
-const TABS=['home','cal','set'],vs={home:$('#vHome'),cal:vc,set:$('#vSet')},bt={home:$('#nHome'),cal:$('#nCal'),set:$('#nSet')},ind=$('.ind');
-window.show=v=>{for(const k of TABS){vs[k].hidden=k!==v;bt[k].setAttribute('aria-current',k===v?'page':'false')}
- nav.dataset.t=v;if(v==='set')showVer();if(v==='cal')renderCal(0);scrollTo(0,0)};
+/* ---------- Navigation mit drei Tabs (Navbar wird erweitert, nicht geklont) ---------- */
+const nav=$('nav');
+
+/* Kalender-Button zwischen Start und Einstellungen einhängen – nur einmal */
+if(!$('#nCal')){
+  const calBtn=document.createElement('button');
+  calBtn.id='nCal';
+  calBtn.setAttribute('aria-current','false');
+  calBtn.innerHTML=ic('cal')+'Kalender';
+  $('#nSet').before(calBtn);
+}
+
+const TABS=['home','cal','set'];
+const vs={home:$('#vHome'),cal:vc,set:$('#vSet')};
+const bt={home:$('#nHome'),cal:$('#nCal'),set:$('#nSet')};
+
+window.show=v=>{
+  for(const k of TABS){
+    vs[k].hidden=k!==v;
+    bt[k].setAttribute('aria-current',k===v?'page':'false');
+  }
+  nav.dataset.t=v;
+  if(v==='set')showVer();
+  if(v==='cal')renderCal(0);
+  scrollTo(0,0);
+};
+
 TABS.forEach(k=>bt[k].onclick=()=>show(k));
-/* Markierung gedrückt halten und zwischen den Tabs ziehen */
-(()=>{let s=null,moved=false;const stp=()=>ind.offsetWidth+4,cl=(v,a,b)=>Math.min(b,Math.max(a,v));
- nav.addEventListener('pointerdown',e=>{if(e.button>0)return;const r=ind.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right)return;
-  const b=TABS.indexOf(nav.dataset.t)*stp();s={x:e.clientX,id:e.pointerId,base:b,tx:b};moved=false});
- nav.addEventListener('pointermove',e=>{if(!s||e.pointerId!==s.id)return;const dx=e.clientX-s.x;
-  if(!moved){if(Math.abs(dx)<6)return;moved=true;nav.setPointerCapture(e.pointerId);ind.classList.add('drag')}
-  s.tx=cl(s.base+dx,0,2*stp());ind.style.transform=`translateX(${s.tx}px) scale(1.07)`;
-  const k=TABS[Math.round(s.tx/stp())];TABS.forEach(t=>bt[t].setAttribute('aria-current',t===k?'page':'false'))});
- const end=e=>{if(!s||e.pointerId!==s.id)return;const was=moved,tx=s.tx;s=null;if(!was)return;
-  ind.classList.remove('drag');void ind.offsetWidth;show(TABS[Math.round(tx/stp())]);ind.style.transform=''};
- nav.addEventListener('pointerup',end);nav.addEventListener('pointercancel',end)})();
+
+/* WICHTIG: Der Drag-Handler lebt ausschließlich im Haupt-Script.
+   Hier wird kein zweiter registriert – sonst kämpfen zwei Handler
+   um dieselbe Markierung und das Glide ruckelt. */
 
 /* Neu zeichnen, wenn die Liste aktualisiert wird */
 const r0=window.render;window.render=function(){r0();if(!vc.hidden)renderCal(0)};
