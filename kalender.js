@@ -203,7 +203,7 @@ $('#evG').onclick=()=>{const i=ci;$('#dEv').close();openG(i)};
 
 /* ---------- Navigation mit drei Tabs ---------- */
 const old=$('nav'),nav=old.cloneNode(false);
-nav.innerHTML='<span class="ind" aria-hidden="true"></span><button id="nHome" aria-current="page">'+ic('cake')+'Start</button><button id="nCal" aria-current="false">'+ic('cal')+'Kalenderansicht</button><button id="nSet" aria-current="false">'+ic('sliders')+'Einstellungen</button>';
+nav.innerHTML='<span class="ind" aria-hidden="true"></span><button id="nHome" aria-current="page">'+ic('cake')+'Start</button><button id="nCal" aria-current="false">'+ic('cal')+'Kalender</button><button id="nSet" aria-current="false">'+ic('sliders')+'Einstellungen</button>';
 old.replaceWith(nav);
 const TABS=['home','cal','set'],vs={home:$('#vHome'),cal:vc,set:$('#vSet')},bt={home:$('#nHome'),cal:$('#nCal'),set:$('#nSet')},ind=$('.ind');
 window.show=v=>{for(const k of TABS){vs[k].hidden=k!==v;bt[k].setAttribute('aria-current',k===v?'page':'false')}
