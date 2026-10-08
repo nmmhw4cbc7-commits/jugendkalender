@@ -178,6 +178,17 @@ dialog .qrbox{width:min(100%,230px);margin:6px auto 14px}
 :root[data-theme=light] #dock.s #sBtn{background:transparent;border-color:transparent;box-shadow:none}
 :root[data-theme=light] #sX{background:rgba(0,0,0,.08)}
 @media(prefers-reduced-motion:reduce){#dock,#dock nav,#dock nav button,#dock nav .ind,#sBtn,#sFld,#sX{transition:none!important}}
+/* ===== Einstellungen im iOS-Stil: große Überschrift, einzeilige Zeilen in Gruppen ===== */
+#vSet header{margin:6px 0 16px}
+#vSet h1{font-size:2.1rem;letter-spacing:-.03em}
+#vSet .set{min-height:48px;padding:6px 16px;gap:14px}
+#vSet .lbl b{font-weight:400;font-size:1rem}
+#vSet .lbl span{display:none}
+#vSet .tile{width:30px;height:30px;border-radius:7px}
+#vSet .tile .i{width:18px;height:18px}
+#vSet .set+.set::before{left:60px}
+#vSet .grp+.grp,#vSet .foot+.grp{margin-top:26px}
+#vSet .foot{margin:8px 16px 0}
 </style>
 </head>
 <body>
@@ -220,8 +231,6 @@ dialog .qrbox{width:min(100%,230px);margin:6px auto 14px}
 <div class="set"><span class="tile" style="background:var(--acc);color:var(--on)"><svg class="i"><use href="#i-moon"/></svg></span>
 <span class="lbl"><b>Dark Mode</b><span>Dunkles Erscheinungsbild</span></span>
 <button class="tg" id="swD" role="switch" aria-checked="true" aria-label="Dark Mode"></button></div>
-</div>
-<div class="grp">
 <button class="set rowbtn" id="rZoom"><span class="tile" style="background:var(--acc);color:var(--on)"><svg class="i"><use href="#i-zoom"/></svg></span>
 <span class="lbl"><b>Zoom</b><span>Größe der App</span></span>
 <span class="val" id="zVal">100 %</span><svg class="i chev" aria-hidden="true"><use href="#i-chev"/></svg></button>
