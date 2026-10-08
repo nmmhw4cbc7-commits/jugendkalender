@@ -705,7 +705,7 @@ if('serviceWorker' in navigator){
 
 /* ===== Press-Effekt ===== */
 (()=>{
- const PILL='button:not(.rowbtn):not(.chip):not(.ev):not(.dh):not(.wd):not(.dn):not(.more):not(.lnk):not(.cc):not(#nHome):not(#nCal):not(#nSet)';
+ const PILL='button:not(.rowbtn):not(.chip):not(.ev):not(.dh):not(.wd):not(.dn):not(.more):not(.lnk):not(.cc):not(.cseg-btn):not(#nHome):not(#nCal):not(#nSet)';
  function down(el){if(!el||el.dataset.press)return;el.dataset.press='1';
   el.classList.add('press','pressing')}
  function up(el){if(!el||!el.dataset.press)return;delete el.dataset.press;
@@ -736,9 +736,9 @@ if('serviceWorker' in navigator){
  });
 })();
 
-/* ===== Haptik (überall außer Navbar) ===== */
+/* ===== Haptik (überall außer Navbar und .cseg-btn) ===== */
 (()=>{
-  const PILL='button:not(.rowbtn):not(.chip):not(.ev):not(.dh):not(.wd):not(.dn):not(.more):not(.lnk):not(.cc):not(#nHome):not(#nCal):not(#nSet)';
+  const PILL='button:not(.rowbtn):not(.chip):not(.ev):not(.dh):not(.wd):not(.dn):not(.more):not(.lnk):not(.cc):not(.cseg-btn):not(#nHome):not(#nCal):not(#nSet)';
   let iosHaptic=false;
   try{
     const t=document.createElement('input');
