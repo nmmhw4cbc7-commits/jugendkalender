@@ -191,35 +191,73 @@ dialog .qrbox{width:min(100%,230px);margin:6px auto 14px}
 #vSet .foot{margin:8px 16px 0}
 
 /* ===== iOS-26 Press-Effekt für alle Pill-Buttons ===== */
-/* Scale Down + Liquid Glass + Spring Bounce + Haptik */
 button.press{position:relative;isolation:isolate;overflow:hidden;
   transform:translateZ(0);will-change:transform;
   transition:transform .42s cubic-bezier(.34,1.56,.64,1),filter .25s ease,box-shadow .25s ease;
   touch-action:manipulation;-webkit-user-select:none;user-select:none}
-/* Liquid-Glass-Overlay: dunkler/heller Schleier, der beim Drücken erscheint */
 button.press::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
   background:rgba(255,255,255,0);opacity:0;
   transition:opacity .28s ease,background .28s ease;z-index:-1}
 button.press.pressing{transform:scale(.955);transition:transform .12s cubic-bezier(.4,0,.2,1)}
 button.press.pressing::before{opacity:1;background:rgba(0,0,0,.18)}
 :root[data-theme=light] button.press.pressing::before{background:rgba(0,0,0,.08)}
-/* Bounce nach dem Loslassen */
 button.press.bounce{animation:pressBounce .42s cubic-bezier(.34,1.56,.64,1)}
 @keyframes pressBounce{
   0%{transform:scale(.955)}
   55%{transform:scale(1.018)}
   100%{transform:scale(1)}
 }
-/* Pill-Erkennung: nur abgerundete Buttons bekommen den Effekt.
-   Rechteckige Zeilen-Buttons (.rowbtn) und Tages-Zellen bleiben unangetastet. */
-button:not(.rowbtn):not(.chip):not(.ev):not(.dh):not(.wd):not(.dn):not(.more):not(.lnk):not(.cc){}
 @media(prefers-reduced-motion:reduce){
   button.press,button.press.pressing{transition:none!important;transform:none!important;animation:none!important}
   button.press::before{transition:none!important}
 }
+
+/* ===== Versteckter iOS-Switch für echtes Taptic-Engine-Feedback ===== */
+.haptic-src{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;
+  opacity:0;cursor:pointer;z-index:5;appearance:none;-webkit-appearance:none;
+  border:0;background:transparent;border-radius:inherit}
+.haptic-wrap{position:relative}
+
+/* ===== Splash-Screen mit Logo-Animation ===== */
+#splash{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;
+  background:#e8dfcc;transition:opacity .55s ease,visibility .55s ease;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+#splash.hide{opacity:0;visibility:hidden;pointer-events:none}
+#splash svg{width:min(58vw,260px);height:auto;display:block}
+#splash .p1,#splash .p2{transition:transform 1.05s cubic-bezier(.34,1.15,.4,1)}
+#splash .p1{transform:translateX(-14px)}
+#splash .p2{transform:translateX(14px)}
+#splash.merge .p1{transform:translateX(0)}
+#splash.merge .p2{transform:translateX(0)}
+#splash .fade{opacity:0;transition:opacity .6s ease .55s}
+#splash.merge .fade{opacity:1}
+@media(prefers-reduced-motion:reduce){
+  #splash .p1,#splash .p2{transition:none!important;transform:none!important}
+  #splash{transition:none!important}
+}
 </style>
 </head>
 <body>
+
+<!-- Splash-Screen: erscheint sofort beim Öffnen, Personen fahren aufeinander zu -->
+<div id="splash" aria-hidden="true">
+  <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+    <rect width="400" height="400" fill="#e8dfcc"/>
+    <g class="fade">
+      <!-- Linke Person -->
+      <g class="p1">
+        <circle cx="140" cy="150" r="42" fill="#111"/>
+        <path d="M60 300a80 80 0 0 1 160 0z" fill="#111"/>
+      </g>
+      <!-- Rechte Person -->
+      <g class="p2">
+        <circle cx="260" cy="150" r="42" fill="#111"/>
+        <path d="M180 300a80 80 0 0 1 160 0z" fill="#111"/>
+      </g>
+    </g>
+  </svg>
+</div>
+
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
 <symbol id="i-cake" viewBox="0 0 24 24"><path d="M4 21h16M5 21v-8h14v8M3 13h18M12 13V9"/><path d="M12 3c1.2 1.3 1.2 2.7 0 3.6-1.2-.9-1.2-2.3 0-3.6z"/></symbol>
 <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
@@ -342,6 +380,17 @@ const VERSES=[
 
 const $=s=>document.querySelector(s);
 const ic=n=>`<svg class="i" aria-hidden="true"><use href="#i-${n}"/></svg>`;
+
+/* ---------- Splash-Screen ---------- */
+(()=>{
+  const sp=$('#splash');if(!sp)return;
+  requestAnimationFrame(()=>{setTimeout(()=>sp.classList.add('merge'),80)});
+  const finish=()=>{sp.classList.add('hide');setTimeout(()=>sp.remove(),650)};
+  const start=Date.now();
+  addEventListener('load',()=>{const wait=Math.max(0,1600-(Date.now()-start));setTimeout(finish,wait)});
+  setTimeout(finish,3500);
+})();
+
 /* ---------- Design (Akzentfarbe) ---------- */
 const ACC_DEF='#e5263b';
 function applyAcc(c){if(!/^#[0-9a-f]{6}$/i.test(c||''))c=ACC_DEF;
@@ -412,7 +461,6 @@ function render(){
   else T.innerHTML='<div class="t-empty">Heute stehen keine Geburtstage an.</div>';
  }
 
- /* Suche: Jedes eingegebene Wort muss irgendwo im Namen vorkommen, die Reihenfolge von Vor- und Nachname ist egal */
  const toks=q.split(/\s+/).filter(Boolean);
  const items=q?all.filter(x=>{const n=x.p.n.toLowerCase();return toks.every(t=>n.includes(t))}).sort((a,b)=>a.p.n.localeCompare(b.p.n,'de')):all;
  let h=q&&!items.length?'<p class="hint">Keine Treffer.</p>':'',last=-1;
@@ -459,7 +507,6 @@ function csv(t,dl){const out=[];let row=[],c='',q=false;
  row.push(c);out.push(row);return out}
 function fixEnc(t){if(!/Ã[\u0080-\u00BF]/.test(t))return t;
  try{return new TextDecoder('utf-8',{fatal:true}).decode(Uint8Array.from(t,c=>{const k=c.charCodeAt(0);if(k>255)throw 0;return k}))}catch(e){return t}}
-/* Pro Zeile: erstes Datum finden, Name = Textzelle davor, Schwester/Bruder = Geschlecht, @name = Telegram */
 function parse(t){t=fixEnc(t.replace(/^\uFEFF/,''));
  const head=t.slice(0,3000),cnt=d=>head.split(d).length;
  const dl=[',',';','\t'].sort((a,b)=>cnt(b)-cnt(a))[0],out=[];
@@ -640,22 +687,12 @@ if('serviceWorker' in navigator){
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)reg.update().catch(()=>{})})
  }).catch(()=>{}))}
 
-/* ===== iOS-26 Press-Effekt: Scale Down + Liquid Glass + Spring Bounce + Haptik =====
-   Global per Event-Delegation. Erfasst alle Pill-Buttons (border-radius:999px):
-   .pri .ghost .danger .tg nav button .cseg button .cnv button .seg button
-   #dEv .acts button #dLog .acts button #dGrat .acts button #dTut .acts button #dShare .acts button
-   Ausgenommen: .rowbtn (Zeilen), .chip/.ev (Kalender), .wd/.dh (Tagesspalten), .lnk (Links), .cc (Farbwähler) */
+/* ===== iOS-26 Press-Effekt: Scale Down + Liquid Glass + Spring Bounce =====
+   Global per Event-Delegation. Erfasst alle Pill-Buttons. */
 (()=>{
  const PILL='button:not(.rowbtn):not(.chip):not(.ev):not(.dh):not(.wd):not(.dn):not(.more):not(.lnk):not(.cc)';
- let lastVib=0;
- function vib(ms){const n=Date.now();if(n-lastVib<60)return;lastVib=n;
-  try{if(navigator.vibrate)navigator.vibrate(ms)}catch(e){}
-  /* iOS: kein navigator.vibrate – kurzer Trick über einen leeren Link-Klick löst
-     auf iPhones mit Taptic Engine ein leichtes haptisches Feedback aus (iOS 17.4+). */
-  if(/iPhone|iPad|iPod/.test(navigator.userAgent)&&!navigator.vibrate){
-   try{const a=document.createElement('a');a.href='#';a.style.display='none';document.body.appendChild(a);a.click();a.remove()}catch(e){}}}
  function down(el){if(!el||el.dataset.press)return;el.dataset.press='1';
-  el.classList.add('press','pressing');vib(8)}
+  el.classList.add('press','pressing')}
  function up(el){if(!el||!el.dataset.press)return;delete el.dataset.press;
   el.classList.remove('pressing');
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){el.classList.remove('press');return}
@@ -675,15 +712,68 @@ if('serviceWorker' in navigator){
  document.addEventListener('pointercancel',()=>{
   document.querySelectorAll('.press.pressing').forEach(up);
  },{passive:true});
- /* Falls der Finger aus dem Button gezogen wird, ohne loszulassen: visuell zurücksetzen */
  document.addEventListener('pointerleave',e=>{
   const el=e.target.closest&&e.target.closest(PILL);
   if(el&&el.dataset.press)up(el);
  },true);
- /* Dialoge: Buttons beim Öffnen frisch initialisieren, damit kein „hängender“ Zustand bleibt */
  document.querySelectorAll('dialog').forEach(d=>{
   d.addEventListener('close',()=>d.querySelectorAll('.press').forEach(b=>{b.classList.remove('press','pressing','bounce');delete b.dataset.press}));
  });
+})();
+
+/* ===== Echtes haptisches Feedback =====
+   iOS: <input type="checkbox" switch> löst die Taptic Engine aus (Safari 17.4+).
+   Android: navigator.vibrate(8) funktioniert direkt. */
+(()=>{
+  const PILL='button:not(.rowbtn):not(.chip):not(.ev):not(.dh):not(.wd):not(.dn):not(.more):not(.lnk):not(.cc)';
+  let iosHaptic=false;
+  try{
+    const t=document.createElement('input');
+    t.type='checkbox';t.setAttribute('switch','');
+    iosHaptic='switch' in t;
+  }catch(e){}
+
+  function vibrate(ms){
+    if(!iosHaptic&&navigator.vibrate){try{navigator.vibrate(ms)}catch(e){}}
+  }
+
+  function attach(el){
+    if(el.dataset.haptic)return;el.dataset.haptic='1';
+    el.classList.add('haptic-wrap');
+    const sw=document.createElement('input');
+    sw.type='checkbox';sw.setAttribute('switch','');
+    sw.setAttribute('aria-hidden','true');sw.tabIndex=-1;
+    sw.className='haptic-src';
+    sw.addEventListener('change',()=>{sw.checked=false;vibrate(8)});
+    sw.addEventListener('click',e=>{
+      e.stopPropagation();
+      if(el.dataset.press===undefined){
+        el.classList.add('press','pressing');
+        setTimeout(()=>{el.classList.remove('pressing');el.classList.add('bounce');
+          setTimeout(()=>el.classList.remove('press','bounce'),500)},90);
+      }
+      el.click();
+    });
+    el.appendChild(sw);
+  }
+
+  function scan(root){
+    (root||document).querySelectorAll(PILL).forEach(attach);
+  }
+  scan();
+  const mo=new MutationObserver(muts=>{
+    for(const m of muts)for(const n of m.addedNodes){
+      if(n.nodeType!==1)continue;
+      if(n.matches&&n.matches(PILL))attach(n);
+      if(n.querySelectorAll)scan(n);
+    }
+  });
+  mo.observe(document.body,{childList:true,subtree:true});
+
+  document.addEventListener('pointerdown',e=>{
+    const el=e.target.closest(PILL);
+    if(el&&!iosHaptic)vibrate(8);
+  },{passive:true});
 })();
 </script>
 <script>
@@ -740,7 +830,6 @@ function openTut(k){kind=k;showTut();$('#dTut').showModal()}
 $('#rHome').onclick=()=>openTut('home');$('#rCal').onclick=()=>openTut('cal');
 $('#sIos').onclick=()=>{os='ios';showTut()};$('#sAnd').onclick=()=>{os='and';showTut()};
 $('#tClose').onclick=()=>$('#dTut').close();
-/* Markierung gedrückt halten und zwischen iPhone und Android ziehen, wo man loslässt, gilt */
 (()=>{const sg=$('.seg'),ind=$('.sind');let st=null,moved=false;
  const max=()=>ind.offsetWidth,cl=(v,a,b)=>Math.min(b,Math.max(a,v));
  sg.addEventListener('pointerdown',e=>{if(e.button>0)return;const r=ind.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right)return;
@@ -759,7 +848,6 @@ if(navigator.share)$('#shSend').hidden=false;
 $('#shSend').onclick=()=>navigator.share({title:'Jugendkalender',text:'Der Geburtstagskalender unserer Jugend',url:LINK}).catch(()=>{});
 $('#shLink').onclick=async()=>{try{await navigator.clipboard.writeText(LINK);toast('Link kopiert')}catch(e){toast('Kopieren nicht möglich')}};
 
-/* ICS-Datei: pro Person ein jährlich wiederkehrender Ganztagstermin, feste IDs, damit ein erneuter Import nichts doppelt anlegt */
 function ics(){const pad=n=>String(n).padStart(2,'0'),f=d=>d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate());
  const q=s=>s.replace(/[\\;,]/g,m=>'\\'+m),fold=l=>{let o='';while(l.length>60){o+=l.slice(0,60)+'\r\n ';l=l.slice(60)}return o+l};
  const stamp=new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d+/,'');
