@@ -598,15 +598,15 @@ function show(v){$('#vHome').hidden=v!=='home';$('#vSet').hidden=v!=='set';
  $('#nHome').setAttribute('aria-current',v==='home'?'page':'false');$('#nSet').setAttribute('aria-current',v==='set'?'page':'false');$('nav').dataset.t=v;if(v==='set')showVer();scrollTo(0,0)}
 $('#nHome').onclick=()=>show('home');$('#nSet').onclick=()=>show('set');
 
-/* Navbar-Markierung: Startbereich = gesamte Navbar */
+/* ============================================================
+   NAVBAR: Original-Zustand – Drag startet nur, wenn der Finger
+   auf der Markierung liegt. Genau wie vorher.
+   ============================================================ */
 (()=>{const nav=$('nav'),ind=$('.ind'),bs=[$('#nHome'),$('#nSet')];let st=null,moved=false;
  const max=()=>ind.offsetWidth+4,cl=(v,a,b)=>Math.min(b,Math.max(a,v));
- nav.addEventListener('pointerdown',e=>{
-  if(e.button>0)return;
-  const r=nav.getBoundingClientRect();
+ nav.addEventListener('pointerdown',e=>{if(e.button>0)return;const r=ind.getBoundingClientRect();
   if(e.clientX<r.left||e.clientX>r.right)return;
-  st={x:e.clientX,base:nav.dataset.t==='set'?max():0,id:e.pointerId,tx:nav.dataset.t==='set'?max():0};moved=false
- });
+  st={x:e.clientX,base:nav.dataset.t==='set'?max():0,id:e.pointerId,tx:nav.dataset.t==='set'?max():0};moved=false});
  nav.addEventListener('pointermove',e=>{if(!st||e.pointerId!==st.id)return;const dx=e.clientX-st.x;
   if(!moved){if(Math.abs(dx)<6)return;moved=true;nav.setPointerCapture(e.pointerId);ind.classList.add('drag')}
   st.tx=cl(st.base+dx,0,max());ind.style.transform=`translateX(${st.tx}px) scale(1.07)`;
@@ -704,10 +704,9 @@ if('serviceWorker' in navigator){
  });
 })();
 
-/* ===== Haptik (iOS-Switch nur 120 ms aktiv, blockiert Drag nicht) ===== */
+/* ===== Haptik (überall, auch in der Navbar) ===== */
 (()=>{
   const PILL='button:not(.rowbtn):not(.chip):not(.ev):not(.dh):not(.wd):not(.dn):not(.more):not(.lnk):not(.cc)';
-  const NO_SW='nav, .cseg, .seg, .ind, #dock';
   let iosHaptic=false;
   try{
     const t=document.createElement('input');
@@ -738,16 +737,13 @@ if('serviceWorker' in navigator){
   }
 
   function scan(root){
-    (root||document).querySelectorAll(PILL).forEach(el=>{
-      if(el.closest(NO_SW))return;
-      attach(el);
-    });
+    (root||document).querySelectorAll(PILL).forEach(attach);
   }
   scan();
   const mo=new MutationObserver(muts=>{
     for(const m of muts)for(const n of m.addedNodes){
       if(n.nodeType!==1)continue;
-      if(n.matches&&n.matches(PILL)&&!n.closest(NO_SW))attach(n);
+      if(n.matches&&n.matches(PILL))attach(n);
       if(n.querySelectorAll)scan(n);
     }
   });
@@ -756,14 +752,13 @@ if('serviceWorker' in navigator){
   document.addEventListener('pointerdown',e=>{
     if(e.button!==undefined&&e.button>0)return;
     const el=e.target.closest(PILL);
-    if(el&&!el.closest(NO_SW)){
-      const sw=el.querySelector('.haptic-src');
-      if(sw&&iosHaptic){
-        sw.classList.add('live');
-        setTimeout(()=>sw.classList.remove('live'),120);
-      }
-      vibrate(8);
+    if(!el)return;
+    const sw=el.querySelector('.haptic-src');
+    if(sw&&iosHaptic){
+      sw.classList.add('live');
+      setTimeout(()=>sw.classList.remove('live'),120);
     }
+    vibrate(8);
   },{passive:true});
 })();
 </script>
