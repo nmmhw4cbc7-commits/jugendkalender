@@ -225,10 +225,10 @@ TABS.forEach(k=>bt[k].onclick=()=>show(k));
 const r0=window.render;window.render=function(){r0();if(!vc.hidden)renderCal(0)};
 })();
 
-/* WhatsApp-Button im Gratulieren-Fenster (neben Telegram), 3 rote oben, 3 graue unten */
+/* WhatsApp-Button im Gratulieren-Fenster (neben Telegram), zwei Spalten im iOS-26-Stil */
 (()=>{if($('#gWa'))return;
 const css=document.createElement('style');
-css.textContent='#dGrat .acts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}#dGrat .acts button{flex-direction:column;gap:4px;padding:12px 4px;font-size:.8rem;border-radius:18px;white-space:nowrap}';
+css.textContent='#dGrat{width:min(calc(100vw - 32px),380px)}#dGrat .acts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}#dGrat .acts button{height:50px;font-size:.95rem}';
 document.head.appendChild(css);
 document.body.insertAdjacentHTML('beforeend','<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="i-wa" viewBox="0 0 24 24"><path d="M3 21l1.65-4.9A9 9 0 1 1 8 19.4z"/><path d="M9 10c0 3 2 5 5 5l1.2-1.4-1.9-1-.8.7c-.9-.4-1.6-1.1-2-2l.7-.8-1-1.9z"/></symbol></svg>');
 $('#gTg').insertAdjacentHTML('afterend','<button class="pri" id="gWa">'+ic('wa')+'WhatsApp</button>');
