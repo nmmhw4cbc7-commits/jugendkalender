@@ -1,0 +1,26 @@
+[
+  {
+    "v": "2.14",
+    "d": "2026-10-08",
+    "n": [
+      "Neu: Versionsverlauf in den Einstellungen. Hier siehst du, was jedes Update ändert."
+    ]
+  },
+  {
+    "v": "2.13",
+    "d": "2026-10-08",
+    "n": [
+      "Wischen im Kalender ist flüssiger: Der Monat folgt dem Finger und gleitet zum nächsten oder vorigen Monat.",
+      "Das Wischen funktioniert auch in der Wochen- und Tagesansicht."
+    ]
+  },
+  {
+    "v": "2.12",
+    "d": "2026-10-08",
+    "n": [
+      "Kalender: Jugendliche erscheinen nur noch in Rot (weiblich) oder Blau (männlich), das grüne Fallback ist weg.",
+      "Wochenansicht: einfache Liste von Montag bis Sonntag ohne Zeitraster, ein Tipp auf einen Geburtstag öffnet das Pop-up.",
+      "Tagesansicht: nur die Geburtstage des Tages, ohne Uhrzeiten."
+    ]
+  }
+]
