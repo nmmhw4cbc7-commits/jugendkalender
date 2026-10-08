@@ -88,7 +88,7 @@ document.head.appendChild(st);
 $('#vSet').insertAdjacentHTML('afterend',`<main id="vCal" hidden data-v="m">
 <div class="chd"><div class="ctt" id="cT"></div>
 <div class="cnv"><button id="cPrev" aria-label="Zurück"><svg class="i" style="transform:scaleX(-1)"><use href="#i-chev"/></svg></button><button id="cNext" aria-label="Weiter"><svg class="i"><use href="#i-chev"/></svg></button></div></div>
-<div class="cseg" data-o="0" role="group" aria-label="Ansicht"><span class="cind" aria-hidden="true"></span><button data-v="m">Monat</button><button data-v="w">Woche</button><button data-v="d">Tag</button></div>
+<div class="cseg" data-o="0" role="group" aria-label="Ansicht"><span class="cind" aria-hidden="true"></span><button class="cseg-btn" data-v="m">Monat</button><button class="cseg-btn" data-v="w">Woche</button><button class="cseg-btn" data-v="d">Tag</button></div>
 <div id="cBody"></div></main>`);
 document.body.insertAdjacentHTML('beforeend',`<dialog id="dEv" aria-label="Geburtstag"><div id="evC"></div>
 <div class="acts"><button class="ghost" id="evX">Schließen</button><button class="pri" id="evG">${ic('gift')}Gratulieren</button></div></dialog>`);
@@ -148,7 +148,8 @@ addEventListener('resize',()=>{if(!vc.hidden&&view==='m')fit()});
 
 /* Markierung gedrückt halten und zwischen Monat, Woche und Tag ziehen.
    Verhält sich exakt wie die Navbar: scale(1.07) beim Ziehen,
-   gleitende Rückkehr beim Loslassen, Tab-Wechsel erst danach. */
+   gleitende Rückkehr beim Loslassen, Tab-Wechsel erst danach.
+   Kein Haptik- und kein Press-Feedback auf den drei Buttons. */
 (()=>{
   const sg=$('.cseg'),ind=$('.cind'),
         bs=[...sg.querySelectorAll('button')],V=['m','w','d'];
@@ -184,8 +185,6 @@ addEventListener('resize',()=>{if(!vc.hidden&&view==='m')fit()});
     if(!s||e.pointerId!==s.id)return;
     const was=moved,tx=s.tx;s=null;
     if(!was)return;
-    /* transition erst nach dem Loslassen wieder aktivieren,
-       damit die Markierung sauber einrastet (genau wie in der Navbar) */
     ind.classList.remove('drag');
     void ind.offsetWidth;
     const v=V[Math.round(tx/stp())];
@@ -199,7 +198,6 @@ addEventListener('resize',()=>{if(!vc.hidden&&view==='m')fit()});
 /* Wischen: Der Inhalt folgt dem Finger. Weit genug oder schnell genug gezogen = nächster/voriger Zeitraum, sonst springt er zurück. */
 (()=>{let s=null,lock=null,w=1,busy=false,block=0;
  const calm=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
- /* Ohne touch-action übernimmt der Browser das waagerechte Ziehen und bricht die Geste ab, das war das Hängen */
  cb.style.touchAction='pan-y';
  const clear=()=>{cb.style.transform='';cb.style.opacity=''};
  cb.addEventListener('touchstart',e=>{if(busy||e.touches.length!==1){s=null;return}
@@ -222,7 +220,6 @@ addEventListener('resize',()=>{if(!vc.hidden&&view==='m')fit()});
     inn.onfinish=inn.oncancel=()=>{busy=false}}}
   else back()};
  cb.addEventListener('touchend',end,{passive:true});cb.addEventListener('touchcancel',end,{passive:true});
- /* Nach dem Wischen kein versehentliches Antippen eines Geburtstags oder Tags */
  cb.addEventListener('click',e=>{if(Date.now()<block){e.stopPropagation();e.preventDefault()}},true)})();
 
 /* Antippen: Geburtstag = Popup, Tag = Tagesansicht */
@@ -266,9 +263,8 @@ window.show=v=>{
 
 TABS.forEach(k=>bt[k].onclick=()=>show(k));
 
-/* WICHTIG: Der Drag-Handler lebt ausschließlich im Haupt-Script.
-   Hier wird kein zweiter registriert – sonst kämpfen zwei Handler
-   um dieselbe Markierung und das Glide ruckelt. */
+/* Der Drag-Handler der Navbar lebt ausschließlich im Haupt-Script.
+   Hier wird kein zweiter registriert. */
 
 /* Neu zeichnen, wenn die Liste aktualisiert wird */
 const r0=window.render;window.render=function(){r0();if(!vc.hidden)renderCal(0)};
@@ -281,7 +277,6 @@ css.textContent='#dGrat{width:min(calc(100vw - 32px),380px)}#dGrat .acts{display
 document.head.appendChild(css);
 document.body.insertAdjacentHTML('beforeend','<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="i-wa" viewBox="0 0 24 24"><path d="M3 21l1.65-4.9A9 9 0 1 1 8 19.4z"/><path d="M9 10c0 3 2 5 5 5l1.2-1.4-1.9-1-.8.7c-.9-.4-1.6-1.1-2-2l.7-.8-1-1.9z"/></symbol></svg>');
 $('#gTg').insertAdjacentHTML('afterend','<button class="pri" id="gWa">'+ic('wa')+'WhatsApp</button>');
-/* Mit Telefonnummer im Telegram-Feld öffnet sich direkt der Chat, sonst die Kontaktauswahl von WhatsApp */
 $('#gWa').onclick=()=>{const t=$('#gMsg').value,tg=cur.p.tg.replace(/\s/g,''),n=/^\+?\d{6,}$/.test(tg)?tg.replace(/\D/g,''):'';
  window.open('https://wa.me/'+n+'?text='+encodeURIComponent(t),'_blank','noopener')};
 })();
@@ -314,11 +309,4 @@ document.body.insertAdjacentHTML('beforeend',`<svg width="0" height="0" style="p
 <dialog id="dLog" aria-labelledby="logT"><h2 id="logT">Versionsverlauf</h2><div id="logC"></div><div class="acts"><button class="pri" id="logX">Schließen</button></div></dialog>`);
 $('#vSet .rst').insertAdjacentHTML('beforebegin',`<div class="grp"><button class="set rowbtn" id="rLog"><span class="tile" style="background:var(--acc);color:var(--on)"><svg class="i"><use href="#i-list"/></svg></span><span class="lbl"><b>Versionsverlauf</b><span>Was in jedem Update neu ist</span></span><svg class="i chev" aria-hidden="true"><use href="#i-chev"/></svg></button></div>`);
 let loaded=false;
-const fmt=s=>{const a=s.split('-'),d=new Date(+a[0],a[1]-1,+a[2]);return isNaN(d)?s:d.toLocaleDateString('de-DE',{day:'numeric',month:'long',year:'numeric'})};
-async function load(){const c=$('#logC');
- try{const r=await fetch('changelog.json');if(!r.ok)throw 0;const j=await r.json();if(!Array.isArray(j)||!j.length)throw 0;
-  c.innerHTML=j.map(e=>`<div class="lv"><div class="lvh"><b>Version ${esc(String(e.v))}</b><span>${esc(fmt(String(e.d||'')))}</span></div><ul>${(e.n||[]).map(t=>`<li>${esc(String(t))}</li>`).join('')}</ul></div>`).join('');loaded=true}
- catch(e){c.innerHTML='<p class="hint">Der Verlauf konnte nicht geladen werden. Prüfe deine Verbindung und versuch es später noch einmal.</p>'}}
-$('#rLog').onclick=()=>{$('#dLog').showModal();if(!loaded){$('#logC').innerHTML='<p class="hint">Lädt …</p>';load()}};
-$('#logX').onclick=()=>$('#dLog').close();
-})();
+const fmt=s=>{const a=s.split('-'),d=new Date(+a[0],a[1]-1,+a[
