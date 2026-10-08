@@ -384,7 +384,9 @@ function render(){
   else T.innerHTML='<div class="t-empty">Heute stehen keine Geburtstage an.</div>';
  }
 
- const items=q?all.filter(x=>x.p.n.toLowerCase().includes(q)).sort((a,b)=>a.p.n.localeCompare(b.p.n,'de')):all;
+ /* Suche: Jedes eingegebene Wort muss irgendwo im Namen vorkommen, die Reihenfolge von Vor- und Nachname ist egal */
+ const toks=q.split(/\s+/).filter(Boolean);
+ const items=q?all.filter(x=>{const n=x.p.n.toLowerCase();return toks.every(t=>n.includes(t))}).sort((a,b)=>a.p.n.localeCompare(b.p.n,'de')):all;
  let h=q&&!items.length?'<p class="hint">Keine Treffer.</p>':'',last=-1;
  items.forEach(x=>{
   if(!q){const k=x.date.getFullYear()*12+x.date.getMonth();if(k!==last){h+=`<h3>${MN[x.date.getMonth()]} ${x.date.getFullYear()}</h3>`;last=k}}
