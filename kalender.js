@@ -137,7 +137,8 @@ function renderCal(dir){
  cb.innerHTML=view==='m'?mHTML():view==='w'?wHTML():dHTML();
  if(view==='m')fit();
  if(dir&&!matchMedia('(prefers-reduced-motion: reduce)').matches&&cb.animate)cb.animate([{opacity:0,transform:`translateX(${dir*28}px)`},{opacity:1,transform:'none'}],{duration:260,easing:'ease-out'})}
-function step(n){cur=view==='m'?addM(cur,n):addD(cur,n*(view==='w'?7:1));renderCal(n)}
+function move(n){cur=view==='m'?addM(cur,n):addD(cur,n*(view==='w'?7:1))}
+function step(n){move(n);renderCal(n)}
 function setView(v){if(v===view)return;const t=today();
  if(view==='m'&&cur.getMonth()===t.getMonth()&&cur.getFullYear()===t.getFullYear())cur=t;
  view=v;renderCal(0)}
@@ -159,11 +160,34 @@ addEventListener('resize',()=>{if(!vc.hidden&&view==='m')fit()});
   if(v===view)renderCal(0);else setView(v);ind.style.transform=''};
  sg.addEventListener('pointerup',end);sg.addEventListener('pointercancel',end)})();
 
-/* Wischen: links = weiter, rechts = zurück */
-let tp=null;
-cb.addEventListener('touchstart',e=>{tp=[e.touches[0].clientX,e.touches[0].clientY]},{passive:true});
-cb.addEventListener('touchend',e=>{if(!tp)return;const t=e.changedTouches[0],dx=t.clientX-tp[0],dy=t.clientY-tp[1];tp=null;
- if(Math.abs(dx)>60&&Math.abs(dx)>2*Math.abs(dy))step(dx<0?1:-1)},{passive:true});
+/* Wischen: Der Inhalt folgt dem Finger. Weit genug oder schnell genug gezogen = nächster/voriger Zeitraum, sonst springt er zurück. */
+(()=>{let s=null,lock=null,w=1,busy=false,block=0;
+ const calm=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+ /* Ohne touch-action übernimmt der Browser das waagerechte Ziehen und bricht die Geste ab, das war das Hängen */
+ cb.style.touchAction='pan-y';
+ const clear=()=>{cb.style.transform='';cb.style.opacity=''};
+ cb.addEventListener('touchstart',e=>{if(busy||e.touches.length!==1){s=null;return}
+  const t=e.touches[0];s={x:t.clientX,y:t.clientY,dx:0,t:Date.now()};lock=null;w=cb.clientWidth||1},{passive:true});
+ cb.addEventListener('touchmove',e=>{if(!s)return;const t=e.touches[0],dx=t.clientX-s.x,dy=t.clientY-s.y;
+  if(!lock){if(Math.abs(dx)<8&&Math.abs(dy)<8)return;lock=Math.abs(dx)>Math.abs(dy)?'x':'y'}
+  if(lock!=='x')return;
+  s.dx=dx;cb.style.transform=`translateX(${dx}px)`;cb.style.opacity=String(1-Math.min(.6,Math.abs(dx)/w))},{passive:true});
+ const back=()=>{const from=cb.style.transform||'none',op=cb.style.opacity||'1';clear();
+  if(!calm()&&cb.animate)cb.animate([{transform:from,opacity:op},{transform:'none',opacity:1}],{duration:200,easing:'ease-out'})};
+ const end=()=>{if(!s)return;const was=lock==='x',dx=s.dx,dt=Math.max(1,Date.now()-s.t);s=null;lock=null;if(!was)return;
+  block=Date.now()+350;
+  const n=dx<0?1:-1;
+  if(Math.abs(dx)>w*.25||(Math.abs(dx)>30&&Math.abs(dx)/dt>.5)){
+   if(calm()||!cb.animate){clear();move(n);renderCal(0);return}
+   busy=true;
+   const out=cb.animate([{transform:cb.style.transform,opacity:cb.style.opacity||'1'},{transform:`translateX(${-n*w}px)`,opacity:0}],{duration:140,easing:'ease-in',fill:'forwards'});
+   out.onfinish=()=>{move(n);renderCal(0);clear();out.cancel();
+    const inn=cb.animate([{transform:`translateX(${n*w*.35}px)`,opacity:0},{transform:'none',opacity:1}],{duration:220,easing:'ease-out'});
+    inn.onfinish=inn.oncancel=()=>{busy=false}}}
+  else back()};
+ cb.addEventListener('touchend',end,{passive:true});cb.addEventListener('touchcancel',end,{passive:true});
+ /* Nach dem Wischen kein versehentliches Antippen eines Geburtstags oder Tags */
+ cb.addEventListener('click',e=>{if(Date.now()<block){e.stopPropagation();e.preventDefault()}},true)})();
 
 /* Antippen: Geburtstag = Popup, Tag = Tagesansicht */
 cb.addEventListener('click',e=>{const c=e.target.closest('[data-e]');if(c){openEv(+c.dataset.e,c.dataset.dt);return}
