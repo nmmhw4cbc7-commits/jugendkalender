@@ -1,37 +1,44 @@
 [
-  {
-    "v": "2.5",
-    "d": "2026-10-08",
-    "n": [
-      "Das große Abschluss-Update: Die App ist jetzt rundum fertig.",
-      "Neue Adresse: jugendkalendar.com, mit neuem QR-Code und dem App-Logo in der Mitte.",
-      "Alle Pop-ups sehen jetzt gleich aus: runde Fenster im iOS-26-Stil mit Pillen-Buttons.",
-      "Farben der Pop-ups folgen deiner Akzentfarbe und dem Dark Mode.",
-      "Neue Suche: Ein runder Button neben der Navbar verschmilzt beim Antippen zur Suchleiste und folgt der Tastatur."
-    ]
-  },
-  {
-    "v": "2.14",
-    "d": "2026-10-08",
-    "n": [
-      "Neu: Versionsverlauf in den Einstellungen. Hier siehst du, was jedes Update ändert."
-    ]
-  },
-  {
-    "v": "2.13",
-    "d": "2026-10-08",
-    "n": [
-      "Wischen im Kalender ist flüssiger: Der Monat folgt dem Finger und gleitet zum nächsten oder vorigen Monat.",
-      "Das Wischen funktioniert auch in der Wochen- und Tagesansicht."
-    ]
-  },
-  {
-    "v": "2.12",
-    "d": "2026-10-08",
-    "n": [
-      "Kalender: Jugendliche erscheinen nur noch in Rot (weiblich) oder Blau (männlich), das grüne Fallback ist weg.",
-      "Wochenansicht: einfache Liste von Montag bis Sonntag ohne Zeitraster, ein Tipp auf einen Geburtstag öffnet das Pop-up.",
-      "Tagesansicht: nur die Geburtstage des Tages, ohne Uhrzeiten."
-    ]
-  }
+{
+"v": "2.5.6",
+"d": "2026-10-08",
+"n": [
+"Suche verbessert: Es spielt keine Rolle mehr, ob du Vor- oder Nachname zuerst eingibst. Der Name wird trotzdem gefunden."
+]
+},
+{
+"v": "2.5",
+"d": "2026-10-08",
+"n": [
+"Das große Abschluss-Update: Die App ist jetzt rundum fertig.",
+"Neue Adresse: jugendkalendar.com, mit neuem QR-Code und dem App-Logo in der Mitte.",
+"Alle Pop-ups sehen jetzt gleich aus: runde Fenster im iOS-26-Stil mit Pillen-Buttons.",
+"Farben der Pop-ups folgen deiner Akzentfarbe und dem Dark Mode.",
+"Neue Suche: Ein runder Button neben der Navbar verschmilzt beim Antippen zur Suchleiste und folgt der Tastatur."
+]
+},
+{
+"v": "2.14",
+"d": "2026-10-08",
+"n": [
+"Neu: Versionsverlauf in den Einstellungen. Hier siehst du, was jedes Update ändert."
+]
+},
+{
+"v": "2.13",
+"d": "2026-10-08",
+"n": [
+"Wischen im Kalender ist flüssiger: Der Monat folgt dem Finger und gleitet zum nächsten oder vorigen Monat.",
+"Das Wischen funktioniert auch in der Wochen- und Tagesansicht."
+]
+},
+{
+"v": "2.12",
+"d": "2026-10-08",
+"n": [
+"Kalender: Jugendliche erscheinen nur noch in Rot (weiblich) oder Blau (männlich), das grüne Fallback ist weg.",
+"Wochenansicht: einfache Liste von Montag bis Sonntag ohne Zeitraster, ein Tipp auf einen Geburtstag öffnet das Pop-up.",
+"Tagesansicht: nur die Geburtstage des Tages, ohne Uhrzeiten."
+]
+}
 ]
