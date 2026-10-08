@@ -214,21 +214,32 @@ button.press.bounce{animation:pressBounce .42s cubic-bezier(.34,1.56,.64,1)}
 .haptic-wrap{position:relative}
 
 #splash{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;
-  background:#ffffff;transition:opacity .55s ease,visibility .55s ease;
+  background:var(--bg);transition:opacity .55s ease,visibility .55s ease;
   padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 #splash.hide{opacity:0;visibility:hidden;pointer-events:none}
-#splash svg{width:min(58vw,260px);height:auto;display:block}
-#splash .p1{transform:translate(-42px,0) scale(.92);transform-origin:center}
-#splash .p2{transform:translate(42px,0) scale(.92);transform-origin:center}
-#splash .p1,#splash .p2{transition:transform 1.1s cubic-bezier(.34,1.2,.45,1)}
-#splash.merge .p1{transform:translate(-14px,0) scale(1)}
-#splash.merge .p2{transform:translate(14px,0) scale(1)}
-#splash .fade{opacity:0;transition:opacity .5s ease .3s}
-#splash.merge .fade{opacity:1}
+.spw{display:flex;align-items:center;gap:14px;
+  font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  font-size:clamp(2rem,9vw,3rem);font-weight:800;letter-spacing:-.02em;color:var(--ink);
+  padding:0 20px;flex-wrap:nowrap}
+.spw .ltr{display:inline-block;opacity:0;transform:translateY(14px) scale(.96);filter:blur(6px);
+  animation:spIn .62s cubic-bezier(.22,.9,.28,1) forwards}
+.spw .ltr.sp{width:.28em}
+.spw .i-cake-sp{width:1em;height:1em;color:var(--acc);
+  opacity:0;transform:translateY(10px) scale(.7) rotate(-8deg);
+  animation:spCake .75s cubic-bezier(.34,1.4,.5,1) forwards;
+  margin-left:2px}
+@keyframes spIn{
+  0%{opacity:0;transform:translateY(14px) scale(.96);filter:blur(6px)}
+  60%{opacity:1;filter:blur(0)}
+  100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
+}
+@keyframes spCake{
+  0%{opacity:0;transform:translateY(10px) scale(.7) rotate(-8deg)}
+  60%{opacity:1;transform:translateY(0) scale(1.08) rotate(2deg)}
+  100%{opacity:1;transform:translateY(0) scale(1) rotate(0)}
+}
 @media(prefers-reduced-motion:reduce){
-  #splash .p1,#splash .p2{transition:none!important}
-  #splash .p1{transform:translate(-14px,0)}
-  #splash .p2{transform:translate(14px,0)}
+  .spw .ltr,.spw .i-cake-sp{animation:none!important;opacity:1!important;transform:none!important;filter:none!important}
   #splash{transition:none!important}
 }
 </style>
@@ -236,19 +247,7 @@ button.press.bounce{animation:pressBounce .42s cubic-bezier(.34,1.56,.64,1)}
 <body>
 
 <div id="splash" aria-hidden="true">
-  <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
-    <rect width="400" height="400" fill="#ffffff"/>
-    <g class="fade">
-      <g class="p1">
-        <circle cx="140" cy="150" r="42" fill="#111"/>
-        <path d="M60 300a80 80 0 0 1 160 0z" fill="#111"/>
-      </g>
-      <g class="p2">
-        <circle cx="260" cy="150" r="42" fill="#111"/>
-        <path d="M180 300a80 80 0 0 1 160 0z" fill="#111"/>
-      </g>
-    </g>
-  </svg>
+  <div class="spw" id="spWord"></div>
 </div>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -371,17 +370,41 @@ const VERSES=[
 const $=s=>document.querySelector(s);
 const ic=n=>`<svg class="i" aria-hidden="true"><use href="#i-${n}"/></svg>`;
 
-/* ---------- Splash-Screen ---------- */
+/* ---------- Splash-Screen: "Jugendkalender" erscheint Buchstabe für Buchstabe ---------- */
 (()=>{
   const sp=$('#splash');if(!sp)return;
   const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const word='Jugendkalender';
+  const box=$('#spWord');
+  const stepBase=reduce?0:70;
+  let delay=reduce?0:260;
+
+  [...word].forEach(ch=>{
+    const s=document.createElement('span');
+    s.className='ltr'+(ch===' '?' sp':'');
+    s.textContent=ch===' '?'\u00A0':ch;
+    s.style.animationDelay=delay+'ms';
+    box.appendChild(s);
+    delay+=stepBase;
+  });
+
+  const cake=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  cake.setAttribute('class','i i-cake-sp');
+  cake.setAttribute('aria-hidden','true');
+  cake.innerHTML='<use href="#i-cake"/>';
+  cake.style.animationDelay=(delay+80)+'ms';
+  box.appendChild(cake);
+
   const start=Date.now();
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    setTimeout(()=>{sp.classList.add('merge')},reduce?0:120);
-  }));
+  const wordTime=delay+520;
+  const minShow=Math.max(1200,wordTime+380);
   const finish=()=>{sp.classList.add('hide');setTimeout(()=>sp.remove(),650)};
-  addEventListener('load',()=>{const wait=Math.max(0,1800-(Date.now()-start));setTimeout(finish,wait)});
-  setTimeout(finish,4000);
+
+  addEventListener('load',()=>{
+    const wait=Math.max(0,minShow-(Date.now()-start));
+    setTimeout(finish,wait);
+  });
+  setTimeout(finish,minShow+1200);
 })();
 
 /* ---------- Design ---------- */
@@ -612,7 +635,7 @@ $('#nHome').onclick=()=>show('home');$('#nSet').onclick=()=>show('set');
   const btns=()=>[...nav.querySelectorAll('button')];
   const step=()=>ind().offsetWidth+4;
   const cl=(v,a,b)=>Math.min(b,Math.max(a,v));
-  const key=b=>b.id.replace(/^n/,'').toLowerCase();      /* nHome→home, nCal→cal, nSet→set */
+  const key=b=>b.id.replace(/^n/,'').toLowerCase();
 
   nav.addEventListener('pointerdown',e=>{
     if(e.button>0)return;
