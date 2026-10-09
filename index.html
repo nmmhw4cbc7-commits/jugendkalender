@@ -197,6 +197,7 @@ dialog .qrbox{width:min(100%,230px);margin:6px auto 14px}
 #vSet .set+.set::before{left:60px}
 #vSet .grp+.grp,#vSet .foot+.grp{margin-top:26px}
 #vSet .foot{margin:8px 16px 0}
+#vSet .lbl span.hn{display:block;font-size:.75rem;line-height:1.3}
 
 button.press{position:relative;isolation:isolate;overflow:hidden;
   transform:translateZ(0);will-change:transform;
@@ -283,6 +284,7 @@ button.press.bounce{animation:pressBounce .42s cubic-bezier(.34,1.56,.64,1)}
 <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 6h8M18 6h2M4 12h2M12 12h8M4 18h10M20 18h0"/><circle cx="15" cy="6" r="2.5"/><circle cx="9" cy="12" r="2.5"/><circle cx="17" cy="18" r="2.5"/></symbol>
 <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0"/></symbol>
 <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 2-.9 2-2 0-.5-.2-1-.5-1.3-.3-.3-.5-.8-.5-1.2 0-1.1.9-2 2-2h2.3c2 0 3.7-1.6 3.7-3.6C21 6.5 17 3 12 3z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="15" cy="7" r="1"/></symbol>
+<symbol id="i-haptic" viewBox="0 0 24 24"><rect x="8" y="3" width="8" height="18" rx="2"/><path d="M4.5 8v8M19.5 8v8M2 10.5v3M22 10.5v3"/></symbol>
 <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></symbol>
 <symbol id="i-zoom" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4M8 11h6M11 8v6"/></symbol>
 <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
@@ -314,6 +316,9 @@ button.press.bounce{animation:pressBounce .42s cubic-bezier(.34,1.56,.64,1)}
 <button class="set rowbtn" id="rZoom"><span class="tile" style="background:var(--acc);color:var(--on)"><svg class="i"><use href="#i-zoom"/></svg></span>
 <span class="lbl"><b>Zoom</b><span>Größe der App</span></span>
 <span class="val" id="zVal">100 %</span><svg class="i chev" aria-hidden="true"><use href="#i-chev"/></svg></button>
+<div class="set"><span class="tile" style="background:var(--acc);color:var(--on)"><svg class="i"><use href="#i-haptic"/></svg></span>
+<span class="lbl"><b>Haptisches Feedback</b><span class="hn">Verbraucht etwas mehr Akku</span></span>
+<button class="tg" id="swH" role="switch" aria-checked="true" aria-label="Haptisches Feedback"></button></div>
 </div>
 <div class="rst"><button class="danger" id="bRst">Alle Einstellungen zurücksetzen</button></div>
 <p class="ver"><span id="valVer"></span><br><span id="valUpd"></span><br><span class="lnks"><button class="lnk" id="lnkP">Datenschutzerklärung</button> · <button class="lnk" id="lnkN">Nutzungsbedingungen</button></span></p>
@@ -509,11 +514,14 @@ function render(){
 document.addEventListener('click',e=>{const b=e.target.closest('[data-g]');if(b)openG(+b.dataset.g)});
 $('#q').addEventListener('input',render);
 
+/* Haptik ist standardmäßig an, nur '0' schaltet sie aus */
+function hapticOn(){try{return localStorage.getItem('jk_haptic')!=='0'}catch(e){return true}}
+
 /* ---------- Konfetti von beiden Bildschirmrändern ---------- */
 function burst(){
  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
  /* Android: kurzes Vibrationsmuster. Auf dem iPhone kommt die Haptik vom Tippen auf den Button (siehe Haptik-Block). */
- if(navigator.vibrate){try{navigator.vibrate([12,60,12,60,12])}catch(e){}}
+ if(hapticOn()&&navigator.vibrate){try{navigator.vibrate([12,60,12,60,12])}catch(e){}}
  const old=document.getElementById('confetti');if(old)old.remove();
  const cv=document.createElement('canvas');cv.id='confetti';cv.setAttribute('popover','manual');cv.setAttribute('aria-hidden','true');
  document.body.appendChild(cv);
@@ -752,6 +760,21 @@ $('#nHome').onclick=()=>show('home');$('#nSet').onclick=()=>show('set');
  t.addEventListener('pointerup',end);t.addEventListener('pointercancel',end);
  t.addEventListener('click',()=>{if(skip){skip=false;return}settle(!on(),true)})})();
 
+(()=>{const t=$('#swH');let st=null,moved=false,skip=false;
+ const cl=(v,a,b)=>Math.min(b,Math.max(a,v)),on=()=>t.getAttribute('aria-checked')==='true';
+ const vis=v=>t.setAttribute('aria-checked',v);
+ const pop=()=>{t.classList.remove('go');void t.offsetWidth;t.classList.add('go');setTimeout(()=>t.classList.remove('go'),500)};
+ function settle(v,anim){if(anim)pop();vis(v);LS('jk_haptic',v?'1':'0')}
+ vis(hapticOn());
+ t.addEventListener('pointerdown',e=>{if(e.button>0)return;st={x:e.clientX,id:e.pointerId};moved=false});
+ t.addEventListener('pointermove',e=>{if(!st||e.pointerId!==st.id)return;
+  if(!moved){if(Math.abs(e.clientX-st.x)<4)return;moved=true;t.setPointerCapture(e.pointerId);t.classList.add('drag')}
+  const x=cl(e.clientX-t.getBoundingClientRect().left-21,0,22);t.style.setProperty('--x',x+'px');vis(x>11)});
+ const end=e=>{if(!st||e.pointerId!==st.id)return;st=null;if(!moved)return;skip=true;setTimeout(()=>skip=false,50);
+  t.classList.remove('drag');t.style.removeProperty('--x');settle(on(),false)};
+ t.addEventListener('pointerup',end);t.addEventListener('pointercancel',end);
+ t.addEventListener('click',()=>{if(skip){skip=false;return}settle(!on(),true)})})();
+
 function setZoom(p,keep){p=Math.round(Math.min(150,Math.max(70,+p||100))/5)*5;
  document.documentElement.style.zoom=p===100?'':String(p/100);
  $('#zVal').textContent=p+' %';$('#zTxt').textContent=p+' %';$('#zRange').value=p;
@@ -771,7 +794,7 @@ render();
 if(navigator.onLine)loadDB(true);
 $('#bRst').onclick=()=>$('#dRst').showModal();
 $('#rstNo').onclick=()=>$('#dRst').close();
-$('#rstYes').onclick=()=>{['jk_acc','jk_dark','jk_zoom','jk_notif'].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});location.reload()};
+$('#rstYes').onclick=()=>{['jk_acc','jk_dark','jk_zoom','jk_notif','jk_haptic'].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});location.reload()};
 
 if('serviceWorker' in navigator){
  let wantReload=false,waiting=null;
@@ -828,7 +851,7 @@ if('serviceWorker' in navigator){
     iosHaptic='switch' in t;
   }catch(e){}
 
-  function vibrate(ms){if(navigator.vibrate){try{navigator.vibrate(ms)}catch(e){}}}
+  function vibrate(ms){if(hapticOn()&&navigator.vibrate){try{navigator.vibrate(ms)}catch(e){}}}
 
   function attach(el){
     if(el.dataset.haptic)return;el.dataset.haptic='1';
@@ -868,7 +891,7 @@ if('serviceWorker' in navigator){
     const el=e.target.closest(PILL);
     if(!el)return;
     const sw=el.querySelector('.haptic-src');
-    if(sw&&iosHaptic){
+    if(sw&&iosHaptic&&hapticOn()){
       sw.classList.add('live');
       setTimeout(()=>sw.classList.remove('live'),120);
     }
