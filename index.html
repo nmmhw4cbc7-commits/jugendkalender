@@ -227,7 +227,7 @@ button.press.bounce{animation:pressBounce .42s cubic-bezier(.34,1.56,.64,1)}
 
 /* ===== Splash: "Jugendkalender" erscheint Buchstabe für Buchstabe + Logo ===== */
 #splash{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;
-  background:var(--bg);transition:opacity .55s ease,visibility .55s ease;
+  background:var(--bg);transition:opacity .4s ease,visibility .4s ease;
   padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
   padding-left:max(20px,env(safe-area-inset-left,0px));
   padding-right:max(20px,env(safe-area-inset-right,0px))}
@@ -237,11 +237,11 @@ button.press.bounce{animation:pressBounce .42s cubic-bezier(.34,1.56,.64,1)}
   font-size:clamp(1.4rem,6.2vw,2.4rem);font-weight:800;letter-spacing:-.02em;color:var(--ink);
   flex-wrap:wrap;row-gap:6px;text-align:center;max-width:100%}
 .spw .ltr{display:inline-block;opacity:0;transform:translateY(14px) scale(.96);filter:blur(6px);
-  animation:spIn .62s cubic-bezier(.22,.9,.28,1) forwards}
+  animation:spIn .42s cubic-bezier(.22,.9,.28,1) forwards}
 .spw .ltr.sp{width:.28em}
 .spw .sp-ico{height:1.15em;width:auto;display:block;flex:none;
   opacity:0;transform:translateY(10px) scale(.7) rotate(-8deg);
-  animation:spCake .75s cubic-bezier(.34,1.4,.5,1) forwards;
+  animation:spCake .5s cubic-bezier(.34,1.4,.5,1) forwards;
   margin-left:2px}
 .spw .sp-ico.dk{display:none}
 :root[data-theme=dark] .spw .sp-ico.lt{display:none}
@@ -394,8 +394,8 @@ const ic=n=>`<svg class="i" aria-hidden="true"><use href="#i-${n}"/></svg>`;
   const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
   const word='Jugendkalender';
   const box=$('#spWord');
-  const stepBase=reduce?0:70;
-  let delay=reduce?0:260;
+  const stepBase=reduce?0:42;
+  let delay=reduce?0:140;
 
   [...word].forEach(ch=>{
     const s=document.createElement('span');
@@ -417,9 +417,9 @@ const ic=n=>`<svg class="i" aria-hidden="true"><use href="#i-${n}"/></svg>`;
   });
 
   const start=Date.now();
-  const wordTime=delay+520;
-  const minShow=Math.max(1200,wordTime+380);
-  const finish=()=>{sp.classList.add('hide');setTimeout(()=>sp.remove(),650)};
+  const wordTime=delay+360;
+  const minShow=Math.max(800,wordTime+250);
+  const finish=()=>{sp.classList.add('hide');setTimeout(()=>sp.remove(),450)};
 
   addEventListener('load',()=>{
     const wait=Math.max(0,minShow-(Date.now()-start));
