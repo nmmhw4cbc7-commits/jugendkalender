@@ -413,10 +413,10 @@ const ic=n=>`<svg class="i" aria-hidden="true"><use href="#i-${n}"/></svg>`;
       try{if(!hapticOn())return}catch(e){return}
       if(navigator.vibrate){try{navigator.vibrate(8)}catch(e){}}
       else{try{
-        const sw=document.createElement('input');sw.type='checkbox';sw.setAttribute('switch','');
-        sw.setAttribute('aria-hidden','true');sw.tabIndex=-1;
-        sw.style.cssText='position:fixed;left:-99px;top:0;opacity:0;pointer-events:none';
-        document.body.appendChild(sw);sw.click();setTimeout(()=>sw.remove(),60);
+        const lb=document.createElement('label');lb.setAttribute('aria-hidden','true');
+        lb.style.cssText='position:fixed;left:0;top:0;width:1px;height:1px;opacity:.01;overflow:hidden;pointer-events:none';
+        const sw=document.createElement('input');sw.type='checkbox';sw.setAttribute('switch','');sw.tabIndex=-1;
+        lb.appendChild(sw);document.body.appendChild(lb);lb.click();setTimeout(()=>lb.remove(),60);
       }catch(e){}}
     },ms);
   };
