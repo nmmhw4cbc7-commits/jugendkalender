@@ -454,6 +454,16 @@ const ic=n=>`<svg class="i" aria-hidden="true"><use href="#i-${n}"/></svg>`;
       setTimeout(iosTick,t);setTimeout(iosTick,t+20);
     }
   }
+  /* iOS 26.5+: Skript-Klicks sind gesperrt, nur eine ECHTE Berührung auf einem Switch löst Haptik aus.
+     Darum liegt über der Splash ein unsichtbares Label mit Switch: jede echte Berührung gibt einen Impuls. */
+  if(iosStart){
+    const ov=document.createElement('label');
+    ov.setAttribute('aria-hidden','true');
+    ov.style.cssText='position:absolute;left:0;top:0;right:0;bottom:0;z-index:3;display:block;-webkit-tap-highlight-color:transparent';
+    const sw=document.createElement('input');sw.type='checkbox';sw.setAttribute('switch','');sw.tabIndex=-1;
+    sw.style.cssText='position:absolute;left:0;top:0;opacity:0;pointer-events:none';
+    ov.appendChild(sw);sp.appendChild(ov);
+  }
   if(!iosStart&&!buzz(0)){
     const evs=['pointerup','touchend','keydown','click'];
     const arm=()=>{
@@ -553,11 +563,25 @@ $('#q').addEventListener('input',render);
 /* Haptik ist standardmäßig an, nur '0' schaltet sie aus */
 function hapticOn(){try{return localStorage.getItem('jk_haptic')!=='0'}catch(e){return true}}
 
+/* Gleiche Vibrationsabfolge wie beim Splash: 2 kurze Impulse pro Buchstabe (14 Buchstaben), beim Gratulieren mit dem Konfetti */
+function hapticSeq(){
+ if(!hapticOn())return;
+ const n=14,step=42;
+ if(navigator.vibrate){
+  let p=[];for(let i=0;i<n;i++)p=p.concat([5,12,5,Math.max(10,step-22)]);
+  try{navigator.vibrate(p)}catch(e){}return}
+ const tick=()=>{try{
+  const lb=document.createElement('label');lb.setAttribute('aria-hidden','true');lb.style.display='none';
+  const sw=document.createElement('input');sw.type='checkbox';sw.setAttribute('switch','');
+  lb.appendChild(sw);document.documentElement.appendChild(lb);lb.click();
+  setTimeout(()=>lb.remove(),50)}catch(e){}};
+ for(let i=0;i<n;i++)[0,20].forEach(o=>{const t=i*step+o;if(t===0)tick();else setTimeout(tick,t)})}
+
 /* ---------- Konfetti von beiden Bildschirmrändern ---------- */
 function burst(){
  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
  /* Android: kurzes Vibrationsmuster. Auf dem iPhone kommt die Haptik vom Tippen auf den Button (siehe Haptik-Block). */
- if(hapticOn()&&navigator.vibrate){try{navigator.vibrate([12,60,12,60,12])}catch(e){}}
+ hapticSeq();
  const old=document.getElementById('confetti');if(old)old.remove();
  const cv=document.createElement('canvas');cv.id='confetti';cv.setAttribute('popover','manual');cv.setAttribute('aria-hidden','true');
  document.body.appendChild(cv);
