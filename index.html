@@ -437,7 +437,24 @@ const ic=n=>`<svg class="i" aria-hidden="true"><use href="#i-${n}"/></svg>`;
     if(ok)buzzed=true;return ok};
   const idxNow=()=>Math.max(0,Math.floor((Date.now()-start-140)/Math.max(1,stepBase)));
   /* 1. Versuch sofort, 2. Versuch bei der ersten Berührung während der Splash */
-  if(!buzz(0)){
+  /* iPhone: kein navigator.vibrate. Umweg über versteckten Switch-Schalter (Safari 17.4+), 2 Impulse pro Buchstabe */
+  const iosTick=()=>{
+    if(!sp.isConnected||sp.classList.contains('hide'))return;
+    try{if(!hapticOn())return}catch(e){return}
+    try{
+      const lb=document.createElement('label');lb.setAttribute('aria-hidden','true');lb.style.display='none';
+      const sw=document.createElement('input');sw.type='checkbox';sw.setAttribute('switch','');
+      lb.appendChild(sw);document.documentElement.appendChild(lb);lb.click();
+      setTimeout(()=>lb.remove(),50);
+    }catch(e){}};
+  const iosStart=!navigator.vibrate&&!reduce;
+  if(iosStart){
+    for(let i=0;i<word.length;i++){
+      const t=140+i*stepBase;
+      setTimeout(iosTick,t);setTimeout(iosTick,t+20);
+    }
+  }
+  if(!iosStart&&!buzz(0)){
     const evs=['pointerup','touchend','keydown','click'];
     const arm=()=>{
       if(sp.classList.contains('hide')||!sp.isConnected){evs.forEach(n=>removeEventListener(n,arm,true));return}
