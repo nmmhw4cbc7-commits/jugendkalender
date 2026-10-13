@@ -405,29 +405,12 @@ const ic=n=>`<svg class="i" aria-hidden="true"><use href="#i-${n}"/></svg>`;
   const stepBase=reduce?0:42;
   let delay=reduce?0:140;
 
-  /* Kleines Vibrieren zu jedem einzelnen Buchstaben (Android per Vibration; iPhone nur, wenn iOS es ohne Antippen erlaubt) */
-  const tickAt=ms=>{
-    if(reduce)return;
-    setTimeout(()=>{
-      if(!sp.isConnected||sp.classList.contains('hide'))return;
-      try{if(!hapticOn())return}catch(e){return}
-      if(navigator.vibrate){try{navigator.vibrate(8)}catch(e){}}
-      else{try{
-        const lb=document.createElement('label');lb.setAttribute('aria-hidden','true');
-        lb.style.cssText='position:fixed;left:0;top:0;width:1px;height:1px;opacity:.01;overflow:hidden;pointer-events:none';
-        const sw=document.createElement('input');sw.type='checkbox';sw.setAttribute('switch','');sw.tabIndex=-1;
-        lb.appendChild(sw);document.body.appendChild(lb);lb.click();setTimeout(()=>lb.remove(),60);
-      }catch(e){}}
-    },ms);
-  };
-
   [...word].forEach(ch=>{
     const s=document.createElement('span');
     s.className='ltr'+(ch===' '?' sp':'');
     s.textContent=ch===' '?'\u00A0':ch;
     s.style.animationDelay=delay+'ms';
     box.appendChild(s);
-    if(ch!==' ')tickAt(delay);
     delay+=stepBase;
   });
 
@@ -442,6 +425,25 @@ const ic=n=>`<svg class="i" aria-hidden="true"><use href="#i-${n}"/></svg>`;
   });
 
   const start=Date.now();
+  /* Vibration: 2 kurze Pulse pro Buchstabe, als ein Muster (je Buchstabe = stepBase ms) */
+  let buzzed=false;
+  const buzz=from=>{
+    if(buzzed||reduce||!navigator.vibrate)return false;
+    try{if(!hapticOn())return false}catch(e){return false}
+    const left=Math.max(0,word.length-from);if(!left)return false;
+    const unit=[5,12,5,Math.max(10,stepBase-22)];
+    let pat=from===0&&!reduce?[0,140]:[];for(let i=0;i<left;i++)pat=pat.concat(unit);
+    let ok=false;try{ok=navigator.vibrate(pat)}catch(e){}
+    if(ok)buzzed=true;return ok};
+  const idxNow=()=>Math.max(0,Math.floor((Date.now()-start-140)/Math.max(1,stepBase)));
+  /* 1. Versuch sofort, 2. Versuch bei der ersten Berührung während der Splash */
+  if(!buzz(0)){
+    const evs=['pointerup','touchend','keydown','click'];
+    const arm=()=>{
+      if(sp.classList.contains('hide')||!sp.isConnected){evs.forEach(n=>removeEventListener(n,arm,true));return}
+      if(buzz(idxNow()))evs.forEach(n=>removeEventListener(n,arm,true))};
+    evs.forEach(n=>addEventListener(n,arm,true));
+  }
   const wordTime=delay+360;
   const minShow=Math.max(800,wordTime+250);
   const finish=()=>{sp.classList.add('hide');setTimeout(()=>sp.remove(),450)};
