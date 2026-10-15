@@ -59,6 +59,7 @@ h3{font-size:.8rem;margin:20px 6px 8px;color:var(--mut);font-weight:700;letter-s
 .row{display:flex;align-items:center;gap:14px;padding:10px 12px;margin-bottom:8px;background:var(--card);border-radius:22px}
 .dt{width:54px;height:54px;border-radius:16px;background:var(--soft);display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;font-size:1.2rem;line-height:1}
 .dt small{font-weight:600;color:var(--mut);font-size:.7rem;margin-top:3px}
+.dt small.month{font-size:.5rem;text-transform:uppercase}
 .row.now .dt{background:var(--acc);color:var(--on)}.row.now .dt small{color:var(--on)}
 .who{flex:1;min-width:0}
 .who b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -554,7 +555,7 @@ function render(){
  items.forEach(x=>{
   if(!q){const k=x.date.getFullYear()*12+x.date.getMonth();if(k!==last){h+=`<h3>${MN[x.date.getMonth()]} ${x.date.getFullYear()}</h3>`;last=k}}
   const w=x.days==0?'heute':x.days==1?'morgen':`in ${x.days} Tagen`;
-  h+=`<div class="row${x.days==0?' now':''}"><div class="dt"><b>${x.date.getDate()}</b><small>${WD[x.date.getDay()]}</small></div><div class="who"><b>${esc(x.p.n)}</b><span>wird ${x.age} · ${w}</span></div><button class="ghost" data-g="${data.indexOf(x.p)}" aria-label="Gratulieren ${esc(x.p.n)}">${ic('gift')}</button></div>`});
+  h+=`<div class="row${x.days==0?' now':''}"><div class="dt"><b>${x.date.getDate()}</b><small${q?' class="month"':''}>${q?MN[x.date.getMonth()]:WD[x.date.getDay()]}</small></div><div class="who"><b>${esc(x.p.n)}</b><span>wird ${x.age} · ${w}</span></div><button class="ghost" data-g="${data.indexOf(x.p)}" aria-label="Gratulieren ${esc(x.p.n)}">${ic('gift')}</button></div>`});
  $('#list').innerHTML=h;
  if(!$('#st').dataset.m)$('#st').textContent=`${data.length} Geburtstage`}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-g]');if(b)openG(+b.dataset.g)});
